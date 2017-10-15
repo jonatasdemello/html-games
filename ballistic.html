@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE HTML>
 <html>
 
 <head>
@@ -8,18 +8,62 @@
 
 <body>
     <h1>Ballistic</h1>
-    <canvas id="drawingCanvas" width="800" height="600" style="border: dotted; 1px;"></canvas>
-    
-    
     <p>
         Angle: <input id="txtDegrees" type="text" value="45" size="5" /> &nbsp; 
         Speed: <input id="txtSpeed" type="text" value="100" size="5" /> &nbsp;
-        <input type="button" id="btnFire" value="Fire!" /></p>
-    
+        <input type="button" id="btnFire" value="Fire!" onclick="Fire();"/>
+    </p>
+    <canvas id="drawingCanvas" width="750" height="500" style="border: dotted; 1px;"></canvas>
     <script>
+ 
+        var radius = 5;
+        var color = "#669999";
+        var g = 0.1; // acceleration due to gravity
+        var x = 50;  // initial horizontal position
+        var y = 50;  // initial vertical position
+        var vx = 2;  // initial horizontal speed
+        var vy = 0;  // initial vertical speed
 
+        //window.onload = init; 
+ 
+        function init() {
+          setInterval(onEachStep, 1000/60); // 60 fps
+        };
+
+        function onEachStep() {
+          vy += g; // gravity increases the vertical speed
+          x += vx; // horizontal speed increases horizontal position 
+          y += vy; // vertical speed increases vertical position
+
+          if (y > canvas.height - radius){ // if ball hits the ground
+            y = canvas.height - radius; // reposition it at the ground
+            vy *= -0.8; // then reverse and reduce its vertical speed
+          }
+          if (x > canvas.width + radius){ // if ball goes beyond canvas
+            x = -radius; // wrap it around 
+          }
+          drawBall(); // draw the ball
+        };
+
+        function drawBall() {
+
+            with (ctx){
+                //clearRect(0, 0, canvas.width, canvas.height); 
+                fillStyle = color;
+                beginPath();
+                arc(x, y, radius, 0, 2*Math.PI, true);
+                closePath();
+                fill();
+            };
+        };
+        
         function drawAxes(canvas, ctx)
         {
+            var myColor = "#001000";
+			ctx.fillStyle = myColor;
+			ctx.strokeStyle = myColor;
+			ctx.font = "11px Arial";
+            
             for (var x = 0; x < canvas.width; x += 50)
             {
                 ctx.fillText(x, x, 10);
@@ -37,65 +81,77 @@
             ctx.fillRect(x * 2, (200-y) * 2, 1, 1);
         }
         
+		function Point(x, y) {
+            this.x = x;
+            this.y = y;
+        }
         
-        var canvas = document.getElementById("drawingCanvas");
-        var ctx = canvas.getContext("2d");
+		// global vars
+		var canvas = document.getElementById("drawingCanvas");
+		var ctx = canvas.getContext("2d");
         
-        ctx.font = "11px Arial";
-
-        var myColor = "#001000";
-        ctx.fillStyle = myColor;
-        ctx.strokeStyle = myColor;
-        
-        drawAxes(canvas, ctx);
-        
-        
-		var PI = 3.14159265;
+        var PI = 3.14159265;
 
         var XMAX = 750; // 600
         var YMAX = 450; // 500
+		
         var HOUSE_HGT = 10;
         var HOUSE_WID = 14;
         var OVERHANG = 4;
         var CANNON_LEN = 20;
         var CANNON_HGT = 7;
 
-        var m_HouseX;
-        var m_HouseY;
-
-        var m_Theta;
-        var m_BulletX;
-        var m_BulletY;
-        
-        var m_Vx;
-        var m_Vy;
+        var m_Theta = 0;
+        var m_Speed = 100;
+        var m_BulletX = 0;
+        var m_BulletY = 0;
+        var m_Vx = 0;
+        var m_Vy = 0;
 
         var TICKS_PER_SECOND = 10;
         var m_YAcceleration = 9.8 / Math.pow(TICKS_PER_SECOND, 2);
 
         var cx = 0.0;
-        var cy = 0.0;
-
-        function Point(x, y) {
-            this.x = x;
-            this.y = y;
-        }
+        var cy = 0.0;        
         
         var ptsHouse = [];
         var ptsCannon = [];
-        
-        DefineHouse();
-        DrawHouse();
+        		
+		window.onload = function() {
+			
+            // initialize stuff
+			drawAxes(canvas, ctx);
+		
+			cx = (10 + CANNON_HGT / 2) + 20;
+			cy = YMAX - 10 - CANNON_HGT / 2;
+			m_Theta = (45 * PI / 180); // start wiht 45 degrees
+			
+			ReadInput();
+			
+			DefineHouse();
+			DrawHouse();
 
-        DefineCannon();
-        DrawCannon();
+			DefineCannon();
+			DrawCannon();
+		}
+		
+		function ReadInput()
+		{
+            var dg = document.getElementById('txtDegrees').value;
+            
+            m_Theta = (dg * PI / 180);
+
+			if (m_Theta > PI / 2) m_Theta = PI / 2;
+			if (m_Theta < 0) m_Theta = 0;
+			
+			m_Speed = document.getElementById('txtSpeed').value;
+			
+			console.log("m_Theta:", m_Theta, "m_Speed:", m_Speed);
+		}
         
         function DefineHouse()
         {
-            m_HouseX = Math.floor(XMAX * 2 / 3 + Math.random() * XMAX / 3 - HOUSE_WID - OVERHANG);
-			m_HouseY = Math.floor(YMAX - (Math.random() * YMAX / 4) - 3);
-            
-            ptsHouse[0] = new Point(m_HouseX, m_HouseY);
+            ptsHouse[0] = new Point( Math.floor(XMAX * 2 / 3 + Math.random() * XMAX / 3 - HOUSE_WID - OVERHANG), Math.floor(YMAX - (Math.random() * YMAX / 4) - 3) );
             ptsHouse[1] = new Point(ptsHouse[0].x, ptsHouse[0].y - HOUSE_HGT);
             ptsHouse[2] = new Point(ptsHouse[1].x - OVERHANG, ptsHouse[1].y);
             ptsHouse[3] = new Point(ptsHouse[2].x + OVERHANG + HOUSE_WID / 2, ptsHouse[2].y - OVERHANG - HOUSE_WID / 2);
@@ -103,329 +159,124 @@
             ptsHouse[5] = new Point(ptsHouse[4].x - OVERHANG, ptsHouse[1].y);
             ptsHouse[6] = new Point(ptsHouse[5].x, ptsHouse[0].y);
             
-            console.log(ptsHouse);
+            console.log("house:", ptsHouse);
         }
 
         function DefineCannon()
         {
-			cx = 10 + CANNON_HGT / 2;
-			cy = YMAX - 10 - CANNON_HGT / 2;
-            
             ReadInput();
             
-            x_Cannon = Math.floor( cx - CANNON_HGT * Math.cos(PI / 2 - m_Theta) / 2);
-            y_Cannon = Math.floor( cy - CANNON_HGT * Math.sin(PI / 2 - m_Theta) / 2);
-            
-            ptsCannon[0] = new Point(x_Cannon, y_Cannon);
-            ptsCannon[1] = new Point(ptsCannon[0].x + CANNON_LEN * Math.cos(m_Theta), ptsCannon[0].y - CANNON_LEN * Math.sin(m_Theta));
-            ptsCannon[2] = new Point(ptsCannon[1].x + CANNON_HGT * Math.cos(PI / 2 - m_Theta), ptsCannon[1].y + CANNON_HGT * Math.sin(PI / 2 - m_Theta));
-            ptsCannon[3] = new Point(ptsCannon[2].x - CANNON_LEN * Math.cos(m_Theta), ptsCannon[2].y + CANNON_LEN * Math.sin(m_Theta));
+            ptsCannon[0] = new Point(Math.floor( cx - CANNON_HGT * Math.cos(PI / 2 - m_Theta) / 2), Math.floor( cy - CANNON_HGT * Math.sin(PI / 2 - m_Theta) / 2));
+            ptsCannon[1] = new Point(Math.floor( ptsCannon[0].x + CANNON_LEN * Math.cos(m_Theta) ), Math.floor( ptsCannon[0].y - CANNON_LEN * Math.sin(m_Theta)) );
+            ptsCannon[2] = new Point(Math.floor( ptsCannon[1].x + CANNON_HGT * Math.cos(PI / 2 - m_Theta) ), Math.floor( ptsCannon[1].y + CANNON_HGT * Math.sin(PI / 2 - m_Theta)) );
+            ptsCannon[3] = new Point(Math.floor( ptsCannon[2].x - CANNON_LEN * Math.cos(m_Theta) ), Math.floor( ptsCannon[2].y + CANNON_LEN * Math.sin(m_Theta)) );
 
-            console.log(ptsCannon);
-        }
-
-		function ReadInput()
-		{
-            var dg = document.getElementById('txtDegrees').value;
-            
-            m_Theta = Math.floor(dg * PI / 180);
-
-			if (m_Theta > PI / 2) m_Theta = PI / 2;
-			if (m_Theta < 0) m_Theta = 0;
-		}
-        
-        function drawLine(x1, y1, x2, y2, ctx)
-        {
-            var scale = 2.5;
-            ctx.moveTo(x1 * scale, y1 * scale);
-            ctx.lineTo(x2 * scale, y2 * scale);
-            ctx.stroke();
+            console.log("cannon:", ptsCannon);
+			
+			console.log("cx:", cx, "cy:", cy);
         }
         
         function DrawHouse()
         {
             var scale = 1;
+			
+			ctx.beginPath();
             ctx.moveTo(ptsHouse[0].x * scale, ptsHouse[0].y * scale);
             
             for( var i = 0; i< ptsHouse.length; i++){
                 ctx.lineTo(ptsHouse[i].x * scale, ptsHouse[i].y * scale);
             }
             ctx.lineTo(ptsHouse[0].x * scale, ptsHouse[0].y * scale);
+            
+            ctx.fillStyle = "blue";
+            ctx.fill();
             ctx.stroke();
         }
 
         function DrawCannon()
         {
             var scale = 1;
+			
+			ctx.beginPath();
             ctx.moveTo(ptsCannon[0].x * scale, ptsCannon[0].y * scale);
             
             for( var i = 0; i< ptsCannon.length; i++){
                 ctx.lineTo(ptsCannon[i].x * scale, ptsCannon[i].y * scale);
             }
             ctx.lineTo(ptsCannon[0].x * scale, ptsCannon[0].y * scale);
+			ctx.closePath();
+            ctx.fillStyle = "black";
+            ctx.fill();
             ctx.stroke();
             
             var x,y;
             x = Math.floor(cx);
             y = Math.floor(cy + CANNON_HGT / 2);
             
-            console.log(x, y);
-            ctx.beginPath()
-            ctx.arc(x, y, 10, 0, Math.PI, 1 );
+            //console.log("x:", x, "y:", y);
+            
+            ctx.beginPath();
+            ctx.arc(x, y, 15, 0, Math.PI, 1 );
+            ctx.fillStyle = "black";
+            ctx.fill();
             ctx.stroke();
+            
+            // draw ground
+            ctx.beginPath()
+            ctx.fillStyle = "green";
+            ctx.fillRect(0,440,750,440);
+            ctx.stroke();
+            
         }
 
-        
-        
-        /*function DrawField()
+        function onEachStepFire() 
         {
-            //picCanvas.Refresh()
-            g = picCanvas.CreateGraphics();
-
-			//cx = 10 + CANNON_HGT / 2;
-			//cy = YMAX - 10 - CANNON_HGT / 2;
-
-            //On Error Resume Next
-            
-			m_Theta = Convert.ToSingle(txtDegrees.Text) * PI / 180;
-
-            //If Err.Number <> 0 Then
-            //    m_Theta = 0
-            //    Err.Clear()
-            //End If
-            
-			if (m_Theta > PI / 2)
-                m_Theta = PI / 2;
-            if (m_Theta < 0)
-                m_Theta = 0;
-            
-			//On Error GoTo 0
-
-            DrawHouse();
-            DrawCannon();
-
-            //g.DrawEllipse(p, 70, 10, 100, 150)
-
-            //DefineHouse()
-
-            //g.DrawPolygon(p, ptsHouse);
-
-            //picCanvas.Cls()
-            //picCanvas.DrawMode = vbCopyPen
-            //picCanvas.ForeColor = vbBlue
-            //picCanvas.FillColor = vbWhite
-            //picCanvas.FillStyle = vbSolid
-            //picCanvas.DrawStyle = vbSolid
-
-            //Polygon(picCanvas.hdc, ptsHouse[0], UBound(ptsHouse))
-
-            // Desenha a bala de canhão
-            //On Error Resume Next
-            //m_Theta = CSng(txtDegrees.Text) * PI / 180
-            //If Err.Number <> 0 Then
-            //    m_Theta = 0
-            //    Err.Clear()
-            //End If
-            //If m_Theta > PI / 2 Then m_Theta = PI / 2
-            //If m_Theta < 0 Then m_Theta = 0
-            //On Error GoTo 0
-
-            //cx = 10 + CANNON_HGT / 2
-            //cy = YMAX - 10 - CANNON_HGT / 2
-
-            //DefineCannon()
-
-            // g.DrawPolygon(p, ptsCannon);
-
-            //picCanvas.DrawMode = vbCopyPen
-            //picCanvas.ForeColor = vbBlack
-            //picCanvas.FillColor = RGB(192, 192, 192)
-            //picCanvas.FillStyle = vbSolid
-            //picCanvas.DrawStyle = vbSolid
-
-            //Polygon(picCanvas.hdc, ptsCannon[0], UBound(ptsCannon))
-
-            //picCanvas.FillColor = RGB(128, 128, 128)
-            //picCanvas.Circle (cx, cy + CANNON_HGT / 2), CANNON_HGT * 1.5, vbBlack, -0.001, -PI
-
-			//int x, y;
-			//x = (int)cx;
-			//y = (int)(cy + CANNON_HGT / 2);
-
-			//g.DrawEllipse(new Pen(Color.Green), x, y, 10, 10);
-
-            //g.DrawEllipse(new Pen(Color.Green), cx, (cy + CANNON_HGT / 2), 10, 10);
-
-            // posicao inicial?
-            m_BulletX = Convert.ToInt32(ptsCannon[2].X + CANNON_HGT * Math.Cos(PI / 2 - m_Theta) / 2 + CANNON_HGT * Math.Cos(m_Theta) * 0.6);
-            m_BulletY = Convert.ToInt32(ptsCannon[2].Y - CANNON_HGT * Math.Sin(PI / 2 - m_Theta) / 2 - CANNON_HGT * Math.Sin(m_Theta) * 0.6);
-
-			g.DrawEllipse(new Pen(Color.Green), (int)m_BulletX, (int)m_BulletY, 10, 10);
-
-			g.Dispose();
-        }*/
-
-        //    var Sub cmdFire_Click()
-
-        //        Dim speed As Single
-
-        //        ' Redesenha.
-        //        DrawField()
-
-        //        ' Pega a velocidade
-        //        On Error Resume Next
-        //        speed = CSng(txtSpeed.Text)
-        //        If Err.Number <> 0 Then
-        //            MsgBox("velocidade inválida", vbExclamation, "Velocidade Inválida")
-        //            Exit Sub
-        //        End If
-        //        On Error GoTo 0
-        //        If speed < 1 Then
-        //            MsgBox("Velocidade tem que ser no mínimo de 1 mps", vbExclamation, "Velocidade Inválida")
-        //            Exit Sub
-        //        End If
-
-        //        ' Pega a velocidade em metros por tick.
-        //        m_Vx = speed * Cos(m_Theta) / TICKS_PER_SECOND
-        //        m_Vy = -speed * Sin(m_Theta) / TICKS_PER_SECOND ' Negativo para subir
-
-        //        ' Desabilita os elementos do formulário
-        //        cmdFire.Enabled = False
-        //        txtDegrees.Enabled = False
-        //        txtSpeed.Enabled = False
-        //        Screen.MousePointer = vbHourglass
-        //        DoEvents()
-
-        //#If DEBUGGING Then
-        //        ' Desenha a localização onte bala
-        //        ' irá passar na posição Y onde iniciou
-        //        ' Distance = 2 * V^2 * Sin(T) * Cos(T) / g = V^2 * Sin(2*T) / g
-        //        picCanvas.FillColor = vbBlue
-        //        picCanvas.Circle (m_BulletX + 2 * speed ^ 2 * Sin(m_Theta) * Cos(m_Theta) / 9.8, m_BulletY), CANNON_HGT / 2, vbBlue
-        //#End If
-
-        //        ' Inicia o movimento da bola do canhão
-        //        tmrMoveShot.Enabled = True
-
-        //    End Sub
-        //var Sub Form_Load()
-        //    tmrMoveShot.Enabled = False
-        //    tmrMoveShot.Interval = 1 / TICKS_PER_SECOND * 1000
-        //    Randomize()
-        //    MoveHouse()
-        //    DrawField()
-        //End Sub
-
-        /*function tmrMoveShot_Timer()
-        {
-			g = picCanvas.CreateGraphics();
-
-            // Apaga a posição anterior da bala de canhão
-            //picCanvas.FillColor = picCanvas.BackColor
-            //picCanvas.Circle (m_BulletX, m_BulletY), CANNON_HGT / 2, picCanvas.BackColor
+			// Distance = 2 * V^2 * Sin(T) * Cos(T) / g = V^2 * Sin(2*T) / g
+            //x = ( m_BulletX + 2 * Math.pow(m_Speed, 2) * Math.sin(m_Theta) * Math.cos(m_Theta) / 9.8 );
+            //y = ( m_BulletY );
 
             // movimenta a bola de canhão
             m_Vy = m_Vy + m_YAcceleration;
             m_BulletX = m_BulletX + m_Vx;
             m_BulletY = m_BulletY + m_Vy;
 
-            // Desenha a  nova bala de canhão
-            //picCanvas.Circle (m_BulletX, m_BulletY), CANNON_HGT / 2, vbBlack
-
-            //picCanvas.Refresh()
-
-            int x, y;
-            x = (int)m_BulletX;
-            y = (int)m_BulletY;
-
-            g.DrawEllipse(pBlue, x, y, 10, 10);
-
-            // g.DrawEllipse(new Pen(Color.Blue), m_BulletX, m_BulletY, 10, 10);
-
-            // Verifica se podemos parar
-            //If (m_BulletY > picCanvas.ScaleHeight) Or (m_BulletX > picCanvas.ScaleWidth) Then
-            //if ((m_BulletY > picCanvas.Height) | (m_BulletX > picCanvas.Width))
-			if ((m_BulletY > YMAX) | (m_BulletX > XMAX))
-            {
-                // Para de executar
-                tmrMoveShot.Enabled = false;
-
-                // habilita os controles
-                cmdFire.Enabled = true;
-                txtDegrees.Enabled = true;
-                txtSpeed.Enabled = true;
-
-                //Screen.MousePointer = vbDefault
-                Cursor.Current = Cursors.Default;
-            }
-			g.Dispose();
-        }*/
-
-        //var Sub txtDegrees_Change()
-        //    DrawField()
-        //End Sub
-
-        //var Sub txtSpeed_Change()
-        //    DrawField()
-        //End Sub
-		
-        function cmdFire_Click(sender,e)
-        {
-          /*  double speed = 0;
-			double x = 0;
-			double y = 0;
-
-			g = picCanvas.CreateGraphics();
-
-            DrawField();
-
-            //speed = Convert.ToSingle(txtSpeed.Text);
+            //console.log("vx:", m_Vx, "vy:", m_Vy); //ok
+            //console.log("x:", m_BulletX, "y:", m_BulletY);
             
-            speed = document.getElementById('txtSpeed').value;
+            // Desenha a nova bala de canhão
+            //picCanvas.Circle (m_BulletX, m_BulletY), CANNON_HGT / 2, vbBlack
+            with (ctx){
+                fillStyle = color;
+                beginPath();
+                arc(m_BulletX, YMAX-(-m_BulletY), radius, 0, 2*Math.PI, true);
+                closePath();
+                fill();
+            };
 
-            // Pega a velocidade em metros por tick.
-            m_Vx = speed * Math.Cos(m_Theta) / TICKS_PER_SECOND;
-            m_Vy = -speed * Math.Sin(m_Theta) / TICKS_PER_SECOND; 
-            // Negativo para subir
-
-            cmdFire.Enabled = false;
-            txtDegrees.Enabled = false;
-            txtSpeed.Enabled = false;
-
-            Cursor.Current = Cursors.WaitCursor;
-
-            Application.DoEvents();
-
-            //#If DEBUGGING Then
-            //        ' Desenha a localização onde bala
-            //        ' irá passar na posição Y onde iniciou
-            //        ' Distance = 2 * V^2 * Sin(T) * Cos(T) / g = V^2 * Sin(2*T) / g
-            //        picCanvas.FillColor = vbBlue
-            //        picCanvas.Circle (m_BulletX + 2 * speed ^ 2 * Sin(m_Theta) * Cos(m_Theta) / 9.8, m_BulletY), CANNON_HGT / 2, vbBlue
-            // #End If
-
-			// Distance = 2 * V^2 * Sin(T) * Cos(T) / g = V^2 * Sin(2*T) / g
-            x = ( m_BulletX + 2 * Math.Pow(speed, 2) * Math.Sin(m_Theta) * Math.Cos(m_Theta) / 9.8 );
-            y = ( m_BulletY );
-
-			int ix, iy;
-			ix = Convert.ToInt32(x);
-			iy = Convert.ToInt32(y);
-
-			// last ball position ?
-            //g.DrawEllipse(pBlue, ix, iy, 10, 10);
-			
-            // Inicia o movimento da bola do canhão
-            tmrMoveShot.Enabled = true;
-
-			g.Dispose();*/
+			if ((m_BulletY > YMAX) || (m_BulletX > XMAX))
+            {
+                clearInterval(myTimer);
+            }
+        };
+        
+        var myTimer;
+        function Fire()
+        {
+            ReadInput();
+            
+            m_BulletX = 0;
+            m_BulletY = 0;
+            
+            // Velocidade Inicial em metros por tick.
+            m_Vx = m_Speed * Math.cos(m_Theta) / TICKS_PER_SECOND;
+            m_Vy = -m_Speed * Math.sin(m_Theta) / TICKS_PER_SECOND; // Negativo para subir
+            
+            myTimer = setInterval(onEachStepFire, 1000/20); // 60 fps
         }
 
 
-
-
 /*
-
+*** ORIGINAL CODE ***
 
 Option Explicit
 
@@ -525,15 +376,15 @@ var Sub DrawField()
 	picCanvas.FillColor = RGB(128, 128, 128)
     picCanvas.Circle (cx, cy + CANNON_HGT / 2), CANNON_HGT * 1.5, vbBlack, -0.001, -PI
 
-	m_BulletX = pts(2).X + CANNON_HGT * Cos(PI / 2 - m_Theta) / 2 + _
-	 CANNON_HGT * Cos(m_Theta) * 0.6
-	m_BulletY = pts(2).Y - CANNON_HGT * Sin(PI / 2 - m_Theta) / 2 - _
-	 CANNON_HGT * Sin(m_Theta) * 0.6
+	m_BulletX = pts(2).X + CANNON_HGT * Cos(PI / 2 - m_Theta) / 2 + CANNON_HGT * Cos(m_Theta) * 0.6
+	m_BulletY = pts(2).Y - CANNON_HGT * Sin(PI / 2 - m_Theta) / 2 - CANNON_HGT * Sin(m_Theta) * 0.6
 End Sub
+
 var Sub MoveHouse()
 	m_HouseX = XMAX * 2 / 3 + Rnd * XMAX / 3 - HOUSE_WID - OVERHANG
 	m_HouseY = YMAX - (Rnd * YMAX / 4) - 3
 End Sub
+
 var Sub cmdFire_Click()
 
 	Dim speed As Single
@@ -576,12 +427,12 @@ var Sub cmdFire_Click()
 	' Inicia o movimento da bola do canhão
 	tmrMoveShot.Enabled = True
 End Sub
+
 var Sub Form_Load()
 	tmrMoveShot.Enabled = False
 	tmrMoveShot.Interval = 1 / TICKS_PER_SECOND * 1000
 	Randomize()
 	MoveHouse()
-
 	DrawField()
 End Sub
 
@@ -618,7 +469,6 @@ End Sub
 var Sub txtSpeed_Change()
 	DrawField()
 End Sub
-
 
 */
 
