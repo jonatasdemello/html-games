@@ -21,6 +21,8 @@
 		var ctx = canvas.getContext("2d");
         
         var PI = 3.14159265;
+        var G = 9.8;
+        var T = 0;
 
         var XMAX = 750; // 600
         var YMAX = 450; // 500
@@ -96,11 +98,18 @@
 			m_Speed = document.getElementById('txtSpeed').value;
             m_Theta = document.getElementById('txtDegrees').value;
             
+            // convert from deg to rad
             m_Theta = (m_Theta * PI / 180);
 
 			if (m_Theta > PI / 2) m_Theta = PI / 2;
 			if (m_Theta < 0) m_Theta = 0;
+            
 			//console.log("m_Theta:", m_Theta, "m_Speed:", m_Speed);
+            
+            //reset ball
+            ptsBullet.X=0;
+            ptsBullet.Y=0;
+            T = 0;
 		}
         
         function DefineHouse()
@@ -187,16 +196,20 @@
             // sin(2T) = 2 * sin(T) * cos(T)
             // Distance = V^2 * [2 * Sin(T) * Cos(T)] / g 
             // g = V^2 * Sin(2*T) / g
-
-            var RangeX = Math.floor((Math.pow(m_Speed, 2) * ( 2 * Math.sin(m_Theta) * Math.cos(m_Theta))) / 9.8); 
+            
+            var RangeX = Math.floor( Math.pow(m_Speed, 2) * 2 * Math.sin(m_Theta) * Math.cos(m_Theta) / 9.8); 
+            
+            //var RangeX = Math.floor( Math.pow(m_Speed, 2) *  2 * Math.sin(m_Theta) * Math.cos(m_Theta) / 9.8); 
 			//var RangeX = Math.floor((Math.pow(m_Speed, 2) * ( Math.sin(2 * m_Theta))) / 9.8);
+            
             var RangeY = Math.floor(YMAX);
 			
 			console.log("RangeX:", RangeX, "RangeY:", RangeY);
 			
 			with (ctx){
+                fillStyle = "#7d1616";
 				beginPath();
-				arc(RangeX, (RangeY), radius, 0, 2*Math.PI, true);
+				arc(RangeX, RangeY, radius, 0, 2*Math.PI, true);
 				closePath();
 				fill();
 			};
@@ -204,11 +217,29 @@
 		
         function onEachStepFire() 
         {
+            /*
+            T=0
+            // convert from deg to rad
+            I = I * 2 * PI / 360; 
+            I = I * PI/180; 
+            
+            X = V * cos(I)*T;
+            Y = V * sin(I)*T - G*T*T/2
+            */           
+            var X = m_Speed * Math.cos(m_Theta) * T;
+            var Y = m_Speed * Math.sin(m_Theta) * T - G * Math.pow(T, 2)/2;
+            
+            T = T + 0.2;
+            
+            ptsBullet.X = X;
+            ptsBullet.Y = YMAX - Y;
+            /*
             // movimenta a bola de canhão
             m_Vy = m_Vy + m_YAcceleration;
+            
             ptsBullet.X = ptsBullet.X + m_Vx;
             ptsBullet.Y = ptsBullet.Y + m_Vy;
-
+            */
             //console.log("vx:", m_Vx, "vy:", m_Vy); //ok
             //console.log("x:", ptsBullet.X, "y:", ptsBullet.Y);
             
@@ -231,12 +262,13 @@
         {
 			ReadInput();
             DefineCannon(); // adjust Cannon angle
-			
+            /*
             // initial velocity
             m_Vx = m_Speed * Math.cos(m_Theta) / TICKS_PER_SECOND;
             m_Vy = -m_Speed * Math.sin(m_Theta) / TICKS_PER_SECOND; // Negativo para subir
-            
+            */
 			DrawRange();
+            
             myTimer = setInterval(onEachStepFire, 1000/20); // 60 fps
         }
 		
