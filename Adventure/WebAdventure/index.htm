@@ -1,0 +1,587 @@
+<!doctype html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8" />
+    <title>Adventure</title>
+    <link href="https://fonts.googleapis.com/css?family=Berkshire+Swash" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Acme" rel="stylesheet">
+    <style type="text/css">
+        body {
+            margin: 30px;
+
+            font-family: 'Acme', sans-serif;
+        }
+        h1 {
+            font-family: 'Berkshire Swash', cursive;
+        }
+        #local_desc {
+            border: 1px solid red; 
+            padding: 10px;
+        }
+        #direcoes {
+            border: 1px solid brown; 
+            padding: 10px;
+        }
+        #objetos_local {
+            border: 1px solid blue; 
+            padding: 10px;
+        }
+        #objetos_jogador {
+            border: 1px solid magenta; 
+            padding: 10px;
+        }
+        #resposta {
+            border: 1px solid grey; 
+            padding: 10px;
+        }
+        #local {
+            width: 400px;
+            height: 250px;
+        }
+        #mapa {
+            position: fixed;
+            top: 0;
+            right: 300px;
+            width: 300px;
+            border: 3px solid #73AD21;
+        }
+    </style>
+</head>
+<body>
+    <h1>Adventure</h1>
+
+    <div id="local"><img id="img_local" src="images/img.png" width="300" height="250" /></div>
+
+    <div id="mapa"><img src="images/_map2.jpg" /></div>        
+
+    <div id="local_desc"></div>
+
+    <div id="objetos_local"></div>
+
+    <div id="objetos_jogador"></div>
+
+    <div id="direcoes"></div>
+    <div id="mover">
+        <table>
+            <tr align="center">
+                <td>&nbsp;</td>
+                <td><img id="mv_north" src="images/mv_north.png" onclick="Mover('N');" width="30" height="30" /></td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr align="center">
+                <td><img id="mv_west" src="images/mv_west.png" onclick="Mover('O');" width="30" height="30" /></td>
+                <td><img id="mv_center" src="images/mv_center.png" width="30" height="30" /></td>
+                <td><img id="mv_east" src="images/mv_east.png" onclick="Mover('L');" width="30" height="30" /></td>
+            </tr>
+            <tr align="center">
+                <td>&nbsp;</td>
+                <td><img id="mv_south" src="images/mv_south.png" onclick="Mover('S');" width="30" height="30" /></td>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="resposta"></div>
+
+    <div id="comando">
+        <p>comando:
+            <input id="cmd_input" name="cmd_input" type="text" size="50" />
+            <input id="btn_input" name="btn_input" type="button" value="Execute!" onclick="Ler_Entrada();"/>
+        </p>
+    </div>
+
+
+
+<script type="text/javascript">
+
+    document.getElementById("cmd_input")
+        .addEventListener("keyup", function(event) {
+        event.preventDefault();
+        if (event.keyCode === 13) {
+            document.getElementById("btn_input").click();
+        }
+    });
+
+
+var L = 15; // Local onde o jogador se encontra no momento  
+var LS = ""; // Descricao do Local Atual
+
+var N=0,S=0,E=0,W=0;        // Saídas do local (1=há saída, 0=sem saída)    
+
+var NB=6; // Número de objetos do adventure, usado para dimensionar matrizes e laços FOR...NEXT   
+var LA=0; // Sinalizador do estado da lâmpada (1=acesa, 0=apagada)    
+var TA=0; // Sinalizador do coletor de impostos   
+
+var CMD=""; // Entrada completa do jogador, antes de ser dividida em verbo e substantivo    
+var VS=""; // Verbo em CMD
+var NS=""; // Substantivo em CMDs
+
+var I=0;  // Contém número correspondente a um verbo, usado para selecionar a rotina adequada 
+// IN   Número de objetos carregados pelo jogador   
+// A$   Resposta à pergunta "Quer jogar novamente?" 
+// G    Contém o número do objeto deixado de lado pelo jogador (que é o elemento "G" na matriz "OB")    
+
+var OBR;
+var MSG = "";
+
+var RS = []; // R$(18) Matriz com verbos   Elementos correspondentes das duas matrizes referem-se ao mesmo verbo
+var R = [];  // R(18)  Matriz de números de verbos 
+
+R[0] = 1    ; RS[0] = "NORTE";
+R[1] = 1    ; RS[1] = "SUL";
+R[2] = 1    ; RS[2] = "LESTE";
+R[3] = 1    ; RS[3] = "OESTE";
+    
+R[4] = 2    ; RS[4] = "PEGAR"; 
+R[5] = 2    ; RS[5] = "APANHAR";
+R[6] = 2    ; RS[6] = "CARREGAR";
+R[7] = 3    ; RS[7] = "COLOCAR";
+R[8] = 3    ; RS[8] = "DEIXAR";
+R[9] = 3    ; RS[9] = "LARGAR";
+R[10] = 4   ; RS[10] = "PUXAR";
+R[11] = 5   ; RS[11] = "NADAR";
+R[12] = 6   ; RS[12] = "ESVAZIAR";
+R[13] = 7   ; RS[13] = "ACENDER";
+R[14] = 8   ; RS[14] = "DESISTIR";
+R[15] = 9   ; RS[15] = "LISTAR";
+R[16] = 10  ; RS[16] = "MATAR";
+R[17] = 10  ; RS[17] = "ATIRAR";
+R[18] = 11  ; RS[18] = "AJUDAR";
+
+NB=6; //  NB = Número de objetos do adventure
+
+// OB$()    Matriz com número do local onde está o objeto
+var OB = [];  //  OB[6] = Posição onde esta o objeto no mapa
+var OBS = []; //  OBS[6] = Nome do Objeto
+var SIS = []; //  SIS[6] = Descrição do Objeto
+
+OB[0] = 4     ; OBS[0] = "SACO"       ;  SIS[0] = "Há um saco de bolas de gude aqui";
+OB[1] = 14    ; OBS[1] = "TIJOLO"     ;  SIS[1] = "Tem um tijolo no chao";
+OB[2] = 24    ; OBS[2] = "CORRENTE"   ;  SIS[2] = "Ha uma corrente pendurada sobre o trono";
+OB[3] = 0     ; OBS[3] = "REVOLVER"   ;  SIS[3] = "Tem um revolver no chao";
+OB[4] = 0     ; OBS[4] = "OLHO"       ;  SIS[4] = "Um olho cravejado de brilhantes esta no chao";
+OB[5] = 22    ; OBS[5] = "LAMPADA"    ;  SIS[5] = "Voce esta diante de uma lampada";
+OB[6] = 0     ; OBS[6] = "COLETOR"    ;  SIS[6] = "De repente surge um coletor de impostos";
+
+Game_Loop();
+
+function Game_Loop()
+{
+    Mostra_Local();
+    Mostra_Objetos_Local();
+    Mostra_Objetos();
+    Mostra_Direcoes();
+    Mostra_Resposta();
+    Clear_Input();
+}
+
+function Clear_Input()
+{
+    var dv = document.getElementById("cmd_input");
+    dv.value = "";
+}
+// ================================================================================
+function Ler_Entrada()
+{
+    NS = "" ; VS = ""; CMD = ""; MSG = "";
+
+    CMD = document.getElementById("cmd_input").value;
+    CMD = CMD.toUpperCase().trim();
+
+    // separar 
+    I = CMD.indexOf(" ");
+    if ( I < 0 ) {
+        //' SO VERBO
+        VS = CMD;
+    }
+    else {
+        //' VERBO + OBJETO
+        VS = CMD.substring(0, I); // LEFT(CMD, I - 1);
+        NS = CMD.substring(I+1, CMD.length); // MID(CMD, I + 1);
+    }
+
+    I = 0;
+        //IF INSTR(RS(K), VS) = 1 THEN ' ser for um verbo
+        // if ( RS[K].indexOf(VS) > 0) { //  ser for um verbo
+
+    for (var k=0; k<19; k++){
+        if( RS[k] == VS ){ //' ser for um verbo
+            I = R[k];
+        }
+    }
+    //A última parte da linha 3070 retira a primeira letra de V$ e armazena-a na variável I$. 
+    //A variável I$ será utilizada depois, para fazer com que o jogador se movimente.
+    CMD = VS.substring(0,1); //' coloca apenas a 1a letra 
+
+    console.log("\nLer_Entrada:");
+    console.log("I: ", I);
+    console.log("CMD: ", CMD);
+    console.log("VS: ", VS);
+    console.log("NS: ", NS);
+
+    Do_Stuff();
+}
+// ================================================================================
+function Do_Stuff()
+{
+    //  neste momento já decodificou a entrada do usuario:
+    switch (I) {
+        case 1: //  verbos NORTE,SUL,LESTE,OESTE
+            Mover(CMD);
+            break;
+        case 2:
+            pegar();
+            break;
+        case 3:
+            deixar();
+            break;
+        case 4:
+            puxar();
+            break;
+        case 5:
+            nadar();
+            break;
+        case 6:
+            esvaziar();
+            break;
+        case 7:
+            acender();
+            break;
+        case 8:
+            desistir();
+            break;
+        case 9:
+            listar();
+            break;
+        case 10:
+            matar();
+            break;
+        case 11:
+            ajudar();
+            break;
+    }
+    Game_Loop();
+}
+// ================================================================================
+function Mover(CMD)
+{
+    MSG = "";
+    switch (CMD) {
+        case "N":
+            if (N == 1) {
+                L = L-6;
+            }
+            else {
+                MSG = "Você não pode ir para o Norte!<br>";
+            }
+            break;
+        case "S":
+            if (S == 1) {
+                L = L+6;
+            }
+            else {
+                MSG = "Você não pode ir para o Sul!<br>";
+            }
+            break;
+        case "L":
+            if (E == 1) {
+                L = L+1;
+            }
+            else {
+                MSG = "Você não pode ir para o Leste!<br>";
+            }
+            break;
+        case "O":
+            if (W == 1) {
+                L = L-1;
+            }
+            else {
+                MSG = "Você não pode ir para o Oeste!<br>";
+            }
+            break;
+    }
+    Game_Loop();
+}
+// ================================================================================
+function Mostra_Objetos_Local()
+{
+    //  mostra objetos disponiveis no lugar onde estamos
+    var txt = "Aqui tem: <br />";
+    for (var i = 0; i < NB; i++) {
+        if (OB[i] == L) {
+            txt = txt + " - " + SIS[i] + "<br />";
+        }
+    }
+    var dv = document.getElementById("objetos_local");
+    dv.innerHTML = txt;
+}
+function Mostra_Objetos()
+{
+    var txt = "Voce tem: <br />";
+    for (var i = 0; i < NB; i++) {
+        if (OB[i] == -1) {
+            txt = txt + " - " + OBS[i] + "<br />";
+        }
+    }
+    var dv = document.getElementById("objetos_jogador");
+    dv.innerHTML = txt;
+}
+// ================================================================================
+function Mostra_Resposta()
+{
+    var dv = document.getElementById("resposta");
+    dv.innerHTML = MSG;
+}
+// ================================================================================
+function Mostra_Direcoes()
+{
+    //  mostra possíveis caminhos para seguir
+    var txt = "Voce pode seguir: <br/>";
+
+    if (N == 1) { 
+        txt += " &bull; Norte <br/>";
+        var img = document.getElementById("mv_north");
+        img.src = "./images/mv_north.png";
+    }
+    else {
+        var img = document.getElementById("mv_north");
+        img.src = "./images/mv_empty.png";
+    }
+    if (S == 1) { 
+        txt += " &bull; Sul <br/>"; 
+        var img = document.getElementById("mv_south");
+        img.src = "./images/mv_south.png";
+    }
+    else {
+        var img = document.getElementById("mv_south");
+        img.src = "./images/mv_empty.png";
+    }
+    if (E == 1) { 
+        txt += " &bull; Leste <br/>"; 
+        var img = document.getElementById("mv_east");
+        img.src = "./images/mv_east.png";
+    }
+    else {
+        var img = document.getElementById("mv_east");
+        img.src = "./images/mv_empty.png";
+    }
+    if (W == 1) { 
+        txt += " &bull; Oeste <br/>"; 
+        var img = document.getElementById("mv_west");
+        img.src = "./images/mv_west.png";
+    }
+    else {
+        var img = document.getElementById("mv_west");
+        img.src = "./images/mv_empty.png";
+    }
+
+    var dv = document.getElementById("direcoes");
+    dv.innerHTML = txt;
+}
+// ================================================================================
+function Mostra_Local()
+{
+    switch (L) {
+            //  Descricao dos locais
+        case 4:
+            LS =  "Voce esta do lado de fora de uma grande construcao.";
+            N = 0; E = 0; S = 1; W = 0;
+            break;
+        case 7:
+            LS = "Voce esta a beira de um grande rio.";
+            N = 0; E = 1; S = 0; W = 0;
+            break;
+        case 8:
+            LS = "Voce esta numa floresta petrificada.";
+            N = 0; E = 0; S = 1; W = 1;
+            break;
+        case 10:
+            LS = "Voce esta numa sala muito suja.";
+            N = 1; E = 1; S = 1; W = 0;
+            break;
+        case 11:
+            LS = "Voce esta num quarto escuro.";
+            if (OB[5] == -1 && LA == 1) { 
+                N = 0; E = 0; S = 1; W = 1;
+            }
+            else {
+                N = 0; E = 0; S = 0; W = 0;
+                LS = LS + "<br> Esta muito escuro para ver as saidas.";
+            }
+            break;
+        case 14:
+            LS = "Voce esta num atalho enlameado.";
+            N = 1; E = 1; S = 0; W = 0;
+            break;
+        case 15:
+            LS = "Voce esta na entrada da cidade oculta.";
+            N = 0; E = 1; S = 0; W = 1;
+            break;
+        case 16:
+            LS = "Voce esta no hall de entrada.";
+            N = 1; E = 1; S = 1; W = 1;
+            break;
+        case 17:
+            LS = "Voce esta no patio.";
+            N = 1; E = 1; S = 0; W = 1;
+            break;
+        case 18:
+            LS = "Voce esta no jardim.";
+            N = 0; E = 0; S = 1; W = 1;
+            break;
+        case 22:
+            LS = "Voce esta no guarda-loucas.";
+            N = 1; E = 0; S = 0; W = 0;
+            break;
+        case 24:
+            LS = "Voce esta na sala do trono.";
+            N = 1; E = 0; S = 0; W = 0;
+            break;
+    }
+
+    var img = document.getElementById("img_local");
+    img.src = "./images/"+ L +".png";
+
+    var dv = document.getElementById("local_desc");
+    dv.innerHTML = LS;
+}
+// ================================================================================
+    
+function pegar() {
+	for (var G=0; G<NB; G++) {
+		if (OBS[G] == NS) {
+			if (OB[G] == -1)
+				MSG = "Voce Ja Pegou";
+			if (OB[G] != L)
+				MSG = "Nao esta aqui";
+			if (OB[G] == L) { //objeto esta aqui
+				OB[G] = -1;
+				MSG = "Voce Pegou o "+ OBS[G];
+                break;
+			}
+		}
+	}
+	/*
+	1140 REM *** PEGAR ***
+	1150 FOR G=1 TO NB
+	1160 IF INSTR(OB$(G),N$)=1 THEN GOTO 1190
+	1170 NEXT
+	1180 PRINT N$;"???":GOTO 330
+	1190 IF OB(G)=-1 THEN PRINT"Voce pegou":GOTO 330
+	1200 IF OB(G)<>L THEN PRINT"Nao esta aqui":GOTO 330
+	1210 PRINT"OK":OB(G)=-1
+	1220 GOTO 330
+	*/
+}
+function deixar() {
+    var achou = 0;
+    for (var G=0; G<NB; G++) {
+		if (OBS[G] == NS) {
+            achou = 1;
+			if (OB[G] != -1)
+				MSG = "Voce esta carregando "+ NS;
+			if (OB[G] == -1) { //objeto esta aqui
+				OB[G] = L; // coloca objeto no local
+				MSG = "Voce deixou o "+ OBS[G];
+                break;
+			}
+		}
+	}
+    if(achou == 0)
+        MSG = "Nao entendo "+ NS;
+	/*
+	1230 REM *** DEIXAR ***
+	1240 FOR G=1 TO NB
+	1250 IF INSTR(OB$(G),N$)=1 THEN GOTO 1270
+	1260 NEXT: PRINT N$;"???":GOTO 330
+	1270 IF OB(G) < > -1 THEN PRINT"Voce nao pode ";V$;" o que nao tem":GOTO 330
+	1280 PRINT" OK":OB(G)=L
+	1290 GOTO 330
+*/
+}
+function puxar() {
+	/*
+	1300 REM *** PUXAR ***
+	1310 IN=INSTR("CORRENTE",N$):IF IN=1 AND L< >24 THEN PRINT"Nada acontece":GOTO 330
+	1320 IF IN<>1 THEN PRINT"Voce nao pode puxar isso!":GOTO 330
+	1330 IF OB(5)< >-1 THEN PRINT"Voce cai dentro do vaso e vai embora com a descarga":GOTO 1360
+	1340 REM *** FIM DA AVENTURA ***
+	1350 PRINT"Parabens! Voce completou a tarefa"
+	1360 PRINT:PRINT"Quer jogar novamente (S/N)?"
+	1370 A$=INKEY$:IF A$< >"S" AND A$<>"N" THEN 1370
+	1380 IF A$="S" THEN RUN
+	1390 END
+	*/
+}
+function nadar() {
+    if (L != 7)
+        MSG = "Nadar Onde?";
+    else if (OB[1] == -1)
+        MSG = "Tijolos sao muito pesados. Voce se afogou!";
+    else if (OB[3] > -1) {
+        MSG = "Voce achou um revolver"
+        OB[3] = -1;
+    }
+    else
+        MSG = "Voce se molhou todo";
+}
+function acender() {
+    if (OBS[5] != NS)
+        MSG = "Voce nao pode "+ VS +" "+ NS;
+    else if (OB[5] != -1)
+        G = 6;
+    else if (OB[5] == -1 && LA == 1)
+        MSG = "Ja esta acesa";
+    else if (OB[5] == -1 && LA == 0) {
+        LA = 1;
+        MSG = "Lampada acesa";
+    }
+/*
+	1490 REM *** ACENDER ***
+	1500 IN=INSTR("LAMPADA",N$):IF IN< >1 THEN PRINT"Nao pode ser feito":GOTO 330
+	1510 IF OB(6)< > -1 THEN G=6:GOTO 1270
+	1520 IF LA=1 THEN PRINT"Ja esta acessa":GOTO 330
+	1530 LA=1:PRINT"Ok":GOTO 330
+*/
+}
+function desistir() {
+
+}
+function esvaziar() {
+    
+	/*
+	1450 REM *** ESVAZIAR ***
+	1460 IN=INSTR("SACO",N$):IF IN< >1 THEN PRINT "Isto nao pode se esvaziado":GOTO 330
+	1470 IF OB(1)< >-1 THEN G=1:GOTO 1270
+	1480 PRINT"As bolinhas se espalham pelo chao":OB(5)=L:GOTO 370
+	*/
+}
+function listar() {
+	Mostra_Objetos();
+}
+function matar() {
+    if (OB[3] != -1)
+        MSG = "Com o que?";
+    else if (OB[6] != L)
+        MSG = VS +" quem?";
+    else if (OB[3] == -1 && OB[6] == -1) {
+        MSG = "Voce matou o "+ OB[6];
+        OB[6] = 0;
+    }
+}
+function ajudar() {
+    if (L != 7 || OB[1] != -1)
+        MSG = "Desculpe, nao posso ajudar agora";
+    else
+        MSG = "Tijolos sao muito pesados. Seu braco deve estar doendo.";
+}
+function mostra_instrucoes() {
+    MSG = "Devido a um colapso financeiro voce deixou o pais. <br/>"+
+	"Seus problemas vao terminar quando voce encontrar o legendario olho cravejado de brilhantes de um totem inca. <br/>"+
+    "Depois de encontra-lo  voce precisa achar a saida. <br/>"+
+	"Cuidado com o coletor de impostos!<br/>"
+}
+</script>
+
+    </body>
+</html>
