@@ -13,61 +13,69 @@
         h1 {
             font-family: 'Berkshire Swash', cursive;
         }
+		input {
+            font-family: 'Acme', sans-serif;
+        }
 		div {
 			margin: 5px;
 		}
-        #mapa {
+		table tr td {
+			text-align: center;
+		}
+        #divMap {
 			/* to be removed later */
             position: fixed;
-            top: 0;
+            bottom: 0;
+			right: 0;
             right: 300px;
             width: 300px;
 		}
-        #direcoes {
+        #divDirections {
             border: 1px solid brown; 
             padding: 10px;border-radius: 15px;
         }
-        #objetos_local {
-            border: 1px solid blue; 
-            padding: 10px;
-			border-radius: 15px;
-        }
-        #objetos_jogador {
-            border: 1px solid magenta; 
-            padding: 10px;
-			border-radius: 15px;
-        }
-        #resposta {
+		#divAnswer {
             border: 1px solid grey; 
             padding: 10px;
 			border-radius: 15px;
         }
-		#img_local {
-			border-radius: 15px;
-			height: 250px;
-		}
-		#local_desc {
-            border: 1px solid red; 
+        #divObjectsHere {
+            border: 1px solid blue; 
             padding: 10px;
 			border-radius: 15px;
         }
-        #local_img {
+        #divPlayerObjects {
+            border: 1px solid magenta; 
+            padding: 10px;
+			border-radius: 15px;
+        }
+		#divLocationImage {
             width: 350px;
             height: 250px;
 			border-radius: 15px;
 			background:black;
 			padding: 10px;
 			vertical-align: center;
+		}
+		#locationImage {
+			border-radius: 15px;
+			height: 250px;
+		}
+        
+		#divLocationDescription {
+            border: 1px solid red; 
+            padding: 10px;
+			border-radius: 15px;
         }
 
 		.wrapper {
 		  display: flex;
 		}
-		.left {
+		.leftCol {
 		  flex: 0 0 15%;
 		  margin: 3px;
 		}
-		.right {
+		.rightCol {
 		  flex: 1;
 		  margin: 3px;
 		}
@@ -75,55 +83,55 @@
     </style>
 </head>
 <body>
-<div id="game_section">
+<div id="gameSection">
     <h1>Adventure</h1>
 	
-	<div id="mapa"><img src="images/_map2.jpg" /></div>
+	<div id="divMap"><img src="images/_map2.jpg" /></div>
 	
 	<section class="wrapper">
-		<div class="left">
-			<div id="local_img"><img id="img_local" src="images/img.png" width="350" height="250" /></div>
+		<div class="leftCol">
+			<div id="divLocationImage"><img id="locationImage" src="images/img.png" width="350" height="250" /></div>
 		</div>
-		<div class="right">
-			<div id="local_desc"></div>
-			<div id="objetos_local"></div>
-			<div id="objetos_jogador"></div>
+		<div class="rightCol">
+		
+			<div id="divLocationDescription"></div>
+			<div id="divObjectsHere"></div>
+			<div id="divPlayerObjects"></div>
 			
-			<section class="wrapper">
-				<div class="left">
+			<section class="wrapper"><!-- movement -->
+				<div class="leftCol">
 
-					<div id="mover">
+					<div id="divDirectionsToMove">
 					<table>
 						<tr align="center">
 							<td>&nbsp;</td>
-							<td><img id="mv_north" src="images/mv_north.png" onclick="MovePlayer('N');" width="30" height="30" /></td>
+							<td><img id="mv_north" src="images/mv_north.png" onclick="movePlayer('N');" width="30" height="30" /></td>
 							<td>&nbsp;</td>
 						</tr>
 						<tr align="center">
-							<td><img id="mv_west" src="images/mv_west.png" onclick="MovePlayer('O');" width="30" height="30" /></td>
+							<td><img id="mv_west" src="images/mv_west.png" onclick="movePlayer('O');" width="30" height="30" /></td>
 							<td><img id="mv_center" src="images/mv_center.png" width="30" height="30" /></td>
-							<td><img id="mv_east" src="images/mv_east.png" onclick="MovePlayer('L');" width="30" height="30" /></td>
+							<td><img id="mv_east" src="images/mv_east.png" onclick="movePlayer('L');" width="30" height="30" /></td>
 						</tr>
 						<tr align="center">
 							<td>&nbsp;</td>
-							<td><img id="mv_south" src="images/mv_south.png" onclick="MovePlayer('S');" width="30" height="30" /></td>
+							<td><img id="mv_south" src="images/mv_south.png" onclick="movePlayer('S');" width="30" height="30" /></td>
 							<td>&nbsp;</td>
 						</tr>
 					</table>
 					</div>
 				</div>		
-				<div class="right">
-					<div id="direcoes"></div>
+				<div class="rightCol">
+					<div id="divDirections"></div>
 				</div>
 			</section>
 	
 		</div>
 	</section>
-	  
 	
-    <div id="resposta"></div>
-    <div id="comando">
-        <p>comando:
+    <div id="divAnswer"></div>
+    <div id="divCommand">
+        <p>Command:
             <input id="cmd_input" name="cmd_input" type="text" size="50" />
             <input id="btn_input" name="btn_input" type="button" value="Execute!" onclick="ReadInput();"/>
         </p>
@@ -131,7 +139,6 @@
 </div>
 
 <script type="text/javascript">
-
     document.getElementById("cmd_input")
         .addEventListener("keyup", function(event) {
         event.preventDefault();
@@ -214,18 +221,18 @@ var RSverbs = new Array();
 // OB$()    Matriz com número do local onde está o objeto
 var OB = [];  //  OB[6] = Posição onde esta o objeto no mapa
 var OBS = []; //  OBS[6] = Nome do Objeto
-var SIS = []; //  SIS[6] = Descrição do Objeto
+var OBD = []; //  OBD[6] = Descrição do Objeto
 
-OB[0] = 4     ; OBS[0] = "SACO"       ;  SIS[0] = "Há um saco de bolas de gude aqui";
-OB[1] = 14    ; OBS[1] = "TIJOLO"     ;  SIS[1] = "Tem um tijolo no chao";
-OB[2] = 24    ; OBS[2] = "CORRENTE"   ;  SIS[2] = "Ha uma corrente pendurada sobre o trono";
-OB[3] = 0     ; OBS[3] = "REVOLVER"   ;  SIS[3] = "Tem um revolver no chao";
-OB[4] = 0     ; OBS[4] = "OLHO"       ;  SIS[4] = "Um olho cravejado de brilhantes esta no chao";
-OB[5] = 22    ; OBS[5] = "LAMPADA"    ;  SIS[5] = "Voce esta diante de uma lampada";
-OB[6] = 0     ; OBS[6] = "COLETOR"    ;  SIS[6] = "De repente surge um coletor de impostos";
+OB[0] = 4     ; OBS[0] = "SACO"       ;  OBD[0] = "Há um saco de bolas de gude aqui";
+OB[1] = 14    ; OBS[1] = "TIJOLO"     ;  OBD[1] = "Tem um tijolo no chao";
+OB[2] = 24    ; OBS[2] = "CORRENTE"   ;  OBD[2] = "Ha uma corrente pendurada sobre o trono";
+OB[3] = 0     ; OBS[3] = "REVOLVER"   ;  OBD[3] = "Tem um revolver no chao";
+OB[4] = 0     ; OBS[4] = "OLHO"       ;  OBD[4] = "Um olho cravejado de brilhantes esta no chao";
+OB[5] = 22    ; OBS[5] = "LAMPADA"    ;  OBD[5] = "Voce esta diante de uma lampada";
+OB[6] = 0     ; OBS[6] = "COLETOR"    ;  OBD[6] = "De repente surge um coletor de impostos";
 
-function GameObject(spot, name, description) {
-    this.spot = spot;
+function GameObject(location, name, description) {
+    this.location = location;
     this.name = name;
 	this.description = description;
 }
@@ -282,7 +289,6 @@ var GameLoc = [
 	290 GOTO 330
 	*/
 
-
 Game_Loop();
 
 function Game_Loop() {
@@ -301,7 +307,7 @@ function ReadInput() {
 
     CMD = document.getElementById("cmd_input").value;
     CMD = CMD.toUpperCase().trim();
-
+	//debugger;
     // separar 
     I = CMD.indexOf(" ");
     if ( I < 0 ) {
@@ -351,11 +357,14 @@ function ReadInput() {
 	3090 RETURN
 	*/
 }
-function DoStuff(){
+function DoStuff() {
     //  neste momento já decodificou a entrada do usuario:
     switch (I) {
+	    case 0:
+            MSG = "Eu nao entendo "+ VS;
+            break;
         case 1: //  verbos NORTE,SUL,LESTE,OESTE
-            MovePlayer(CMD);
+            movePlayer(CMD);
             break;
         case 2:
             pegar();
@@ -427,7 +436,7 @@ function DoStuff(){
 	520 PRINT:PRINT"Eu nao sei como ";V$:GOTO 330
 	*/
 }
-function MovePlayer(direction) {
+function movePlayer(direction) {
     MSG = "";
     switch (direction) {
         case "N":
@@ -464,54 +473,29 @@ function MovePlayer(direction) {
             break;
     }
     Game_Loop();
-	/*
-	1000 ' *** ROTINA DE MOVIMENTO ***
-	1010 IF I$="N" AND N>0 THEN L=L-6:GOTO 310
-	1020 IF I$="L" AND E>0 THEN L=L+1:GOTO 310
-	1030 IF I$="S" AND S>0 THEN L=L+6:GOTO 310
-	1040 IF I$="O" AND W>0 THEN L=L-1:GOTO 310
-	1050 ' *** SE NAO HOUVER LOCAL NESTA DIRECAO
-	1060 PRINT:PRINT"Desculpe - Voce nao pode ir por este caminho.":GOTO 330
-	*/
 }
 function ShowObjectsHere(currentLocation) {
-    //  mostra objetos disponiveis no lugar onde estamos
     var txt = "Aqui tem: <br />";
-    for (var i = 0; i < NB; i++) {
+    for (var i = 0; i < OB.length; i++) {
         if (OB[i] == currentLocation) {
-            txt = txt + " - " + SIS[i] + "<br />";
+            txt = txt + " &bull; " + OBD[i] + "<br />";
         }
     }
-    document.getElementById("objetos_local").innerHTML = txt;
-	/*
-	360 ' *** COLOCA OBJETOS NO SEU LUGAR
-	370 FOR I=1 TO NB:IF OB(I)=L THEN PRINT SI$(I)
-	380 NEXT
-	*/
+    document.getElementById("divObjectsHere").innerHTML = txt;
 }
 function ShowInventory() {
     var txt = "Voce tem: <br />";
-    for (var i = 0; i < NB; i++) {
+    for (var i = 0; i < OB.length; i++) {
         if (OB[i] == -1) {
-            txt = txt + " - " + OBS[i] + "<br />";
+            txt = txt + " &bull; " + OBS[i] + "<br />";
         }
     }
-    document.getElementById("objetos_jogador").innerHTML = txt;
-	/*
-	1070 ' *** LISTAR ***
-	1080 PRINT"Voce tem ";:IN=0
-	1090 FOR G=1 TO NB
-	1100 IF OB(G)=-1 THEN PRINT TAB(10) OB$(G):IN=IN+1
-	1110 NEXT
-	1120 IF IN=0 THEN PRINT"Nada"
-	1130 GOTO 330
-	*/
+    document.getElementById("divPlayerObjects").innerHTML = txt;
 }
 function ShowAnswer() {
-    document.getElementById("resposta").innerHTML = MSG;
+    document.getElementById("divAnswer").innerHTML = MSG;
 }
 function ShowDirections(currentLocation) {
-    //  mostra possíveis caminhos para seguir
     var txt = "Voce pode seguir: <br/>";
 
     if (N == 1) { 
@@ -543,15 +527,7 @@ function ShowDirections(currentLocation) {
         document.getElementById("mv_west").src = "./images/mv_empty.png";
     }
 
-    document.getElementById("direcoes").innerHTML = txt;
-	/*
-	390 ' *** INDICAR DIRECOES ***
-	400 IF L<>11 OR (LA=1 AND OB(6)=-1) THEN PRINT:PRINT"Pode seguir"; ELSE 460
-	410 IF N>0 THEN PRINT TAB(13);"NORTE"
-	420 IF E>0 THEN PRINT TAB(13);"LESTE"
-	430 IF S>0 THEN PRINT TAB(13);"SUL"
-	440 IF W>0 THEN PRINT TAB(13);"OESTE"
-	*/
+    document.getElementById("divDirections").innerHTML = txt;
 }
 function ShowLocation(currentLocation) {
 	var locDesc = "";
@@ -575,7 +551,7 @@ function ShowLocation(currentLocation) {
             break;
         case 11:
             locDesc = "Voce esta num quarto escuro.";
-            if (OB[5] == -1 && LA == 1) { 
+            if (OB[5] == -1 && LA == 1) {  // tem lanterna? esta acesa?
                 N = 0; E = 0; S = 1; W = 1;
             }
             else {
@@ -612,105 +588,49 @@ function ShowLocation(currentLocation) {
             N = 1; E = 0; S = 0; W = 0;
             break;
     }
-    document.getElementById("img_local").src = "./images/"+ currentLocation +".png";
-
-    document.getElementById("local_desc").innerHTML = locDesc;
-	/*
-	5000 ' Descricao dos locais
-	5010 ' Local 4
-	5020 PRINT"Voce esta do lado de fora de uma grande construcao"
-	5030 N=0:E=0:S=1:W=0:RETURN
-	5040 ' LOCAL 7
-	5050 PRINT"Voce esta a beira de um grande rio"
-	5060 N=0:E=1:S=0:W=0:RETURN
-	5070 ' LOCAL 8
-	5080 PRINT"Voce esta numa floresta petrificada"
-	5090 N=0:E=0:S=1:W=1:RETURN
-	5100 ' LOCAL 10
-	5110 PRINT"Voce esta numa sala muito suja"
-	5120 N=1:E=1:S=1:W=0:RETURN
-	5130 ' LOCAL 11
-	5140 PRINT"Voce esta num quarto escuro"
-	5150 IF OB(6)<>-1 OR LA<>1 THEN N=0:E=0:S=0:W=0:PRINT"Esta muito escuro para ver as saidas":RETURN
-	5160 N=0:E=0:S=1:W=1:RETURN
-	5170 ' LOCAL 14
-	5180 PRINT"Voce esta num atalho enlameado"
-	5190 N=1:E=1:S=0:W=0:RETURN
-	5200 ' LOCAL 15
-	5210 PRINT"Voce esta na entrada da cidade oculta"
-	5220 N=0:E=1:S=0:W=1:RETURN
-	5230 ' LOCAL 16
-	5240 PRINT"Voce esta no hall de entrada"
-	5250 N=1:E=1:S=1:W=1:RETURN
-	5260 ' LOCAL 17
-	5270 PRINT"Voce esta no patio"
-	5280 N=1:E=1:S=0:W=1:RETURN
-	5290 ' LOCAL 18
-	5300 PRINT"Voce esta no jardim"
-	5310 N=0:E=0:S=1:W=1:RETURN
-	5320 ' LOCAL 22
-	5330 PRINT"Voce esta no guarda-loucas"
-	5340 N=1:E=0:S=0:W=0:RETURN
-	5350 ' LOCAL 24
-	5360 PRINT"Voce esta na sala do trono"
-	5370 N=1:E=0:S=0:W=0:RETURN
-	*/
+    document.getElementById("locationImage").src = "./images/"+ currentLocation +".png";
+    document.getElementById("divLocationDescription").innerHTML = locDesc;
 }
 function pegar() {
 	var achou = 0;
-	for (var G=0; G<NB; G++) {
-		if (OBS[G] == NS) {
+	for (var i=0; i < OB.length; i++) {
+		if (OBS[i] == NS) {
 			achou = 1;
-			if (OB[G] == -1)
-				MSG = "Voce Ja Pegou";
-			if (OB[G] != currentLocation)
-				MSG = OBS[G] +" nao esta aqui";
-			if (OB[G] == currentLocation) { //objeto esta aqui
-				OB[G] = -1;
-				MSG = "Voce Pegou o "+ OBS[G];
+			if (OB[i] == -1) {
+				MSG = "Voce ja pegou "+ OBS[i];
+			}
+			else if (OB[i] != currentLocation) {
+				MSG = OBS[i] +" nao esta aqui";
+			}
+			else if (OB[i] == currentLocation) { // objeto esta aqui
+				OB[i] = -1;
+				MSG = "Voce Pegou o "+ OBS[i];
                 break;
 			}
 		}
 	}
-	if(achou == 0)
-        MSG = "Nao entendo "+ NS;
-	/*
-	1140 REM *** PEGAR ***
-	1150 FOR G=1 TO NB
-	1160 IF INSTR(OB$(G),N$)=1 THEN GOTO 1190
-	1170 NEXT
-	1180 PRINT N$;"???":GOTO 330
-	1190 IF OB(G)=-1 THEN PRINT"Voce pegou":GOTO 330
-	1200 IF OB(G)<>L THEN PRINT"Nao esta aqui":GOTO 330
-	1210 PRINT"OK":OB(G)=-1
-	1220 GOTO 330
-	*/
+	if(achou == 0) {
+        MSG = "Nao e possivel pegar "+ NS;
+	}
 }
 function deixar() {
     var achou = 0;
-    for (var G=0; G<NB; G++) {
-		if (OBS[G] == NS) {
+    for (var i=0; i < OB.length; i++) {
+		if (OBS[i] == NS) {
             achou = 1;
-			if (OB[G] != -1)
+			if (OB[i] != -1) {
 				MSG = "Voce esta carregando "+ NS;
-			if (OB[G] == -1) { //objeto esta aqui
-				OB[G] = currentLocation; // coloca objeto no local
-				MSG = "Voce deixou o "+ OBS[G];
+			}
+			else if (OB[i] == -1) { // objeto esta aqui
+				OB[i] = currentLocation; // coloca objeto no local
+				MSG = "Voce deixou o "+ OBS[i];
                 break;
 			}
 		}
 	}
-    if(achou == 0)
-        MSG = "Nao entendo "+ NS;
-	/*
-	1230 REM *** DEIXAR ***
-	1240 FOR G=1 TO NB
-	1250 IF INSTR(OB$(G),N$)=1 THEN GOTO 1270
-	1260 NEXT: PRINT N$;"???":GOTO 330
-	1270 IF OB(G) < > -1 THEN PRINT"Voce nao pode ";V$;" o que nao tem":GOTO 330
-	1280 PRINT" OK":OB(G)=L
-	1290 GOTO 330
-*/
+    if(achou == 0) {
+        MSG = "Nao e possivel deixar "+ NS;
+	}
 }
 function puxar() {
 	// OBS[2] = "CORRENTE" 
@@ -884,15 +804,16 @@ function mostra_instrucoes() {
 	6060 CLS:RETURN
 	*/
 }
-function fim(){
-/*
-1340 ' *** FIM DA AVENTURA ***
-1350 PRINT"Parabens! Voce completou a tarefa"
-1360 PRINT:PRINT"Quer jogar novamente (S/N)?"
-1370 A$=INKEY$:IF A$<>"S" AND A$<>"N" THEN 1370
-1380 IF A$="S" THEN RUN
-1390 POKE &HFCAB,0:KEY ON:END
-*/
+function fim() {
+	MSG = "Parabens! Voce completou a tarefa";
+	/*
+	1340 ' *** FIM DA AVENTURA ***
+	1350 PRINT"Parabens! Voce completou a tarefa"
+	1360 PRINT:PRINT"Quer jogar novamente (S/N)?"
+	1370 A$=INKEY$:IF A$<>"S" AND A$<>"N" THEN 1370
+	1380 IF A$="S" THEN RUN
+	1390 POKE &HFCAB,0:KEY ON:END
+	*/
 }
 </script>
 
