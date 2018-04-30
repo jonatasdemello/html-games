@@ -18,3 +18,23 @@ function drawAxes(canvas, ctx)
         ctx.fillText(i,0,i);
     }
 }
+
+function drawAxes1(canvas, ctx)
+{
+	for (var x = 0; x < canvas.width; x += 50)
+	{
+		ctx.fillText(x, x, 10);
+	}
+
+	for (var y = 0; y < canvas.height; y += 50)
+	{
+		ctx.fillText(y, 0, y);
+	}
+}
+
+function plot(x, y, ctx)
+{
+	ctx.fillStyle = "rgb(" + x + "," + y + ",40)";
+	ctx.fillRect(x * 2, (200-y) * 2, 1, 1);
+}
+
