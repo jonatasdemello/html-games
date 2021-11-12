@@ -1,3 +1,4 @@
+/*
 From jeffb@sware.com Fri Apr 26 21:59:02 PDT 1996
 Article: 307 of isaac.lists.coderpunks
 Path: news.isaac.cs.berkeley.edu!not-for-mail
@@ -22,23 +23,20 @@ Precedence: bulk
 
 Mutatis Mutantdis writes:
 
-> >I've got a short program for the PC (w/TPascal source) that plots a 
-> >noise sphere from a file of (pseudo) random data, if anyone is 
-> >interested.  Requires a VGA card that handles mode 5Fh (640 x 480, 
+> >I've got a short program for the PC (w/TPascal source) that plots a
+> >noise sphere from a file of (pseudo) random data, if anyone is
+> >interested.  Requires a VGA card that handles mode 5Fh (640 x 480,
 > [..]
-> >The source has a brief explanation of what noise spheres are and a 
+> >The source has a brief explanation of what noise spheres are and a
 > >reference to the Pickover article the program was based on.
-
 > Somebody sent me a C++ conversion of it. It compiles fine with BCC 4.02.
-> 
+>
 > Enclosed here (thanks to  "James Pate Williams, Jr." <pate@mindspring.com>)
-
-Here's a version of it for X Windows, translated into plain-old C. 
-
-
+Here's a version of it for X Windows, translated into plain-old C.
 -- Jeff
                                  oo
 -----------------------------cut /\ here------------------------------
+*/
 /*
   xnoisesph.c
 
