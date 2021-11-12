@@ -106,7 +106,8 @@ void main(int ac, char** av)
 	}
 
 	w = XCreateSimpleWindow(d, RootWindow(d, DefaultScreen(d)),
-		0, 0, 640, 480, 0, BlackPixel(d, DefaultScreen(d)),
+		0, 0, 640, 480, 0, 
+		BlackPixel(d, DefaultScreen(d)),
 		BlackPixel(d, DefaultScreen(d)));
 
 	XSelectInput(d, w, ExposureMask);
@@ -120,15 +121,10 @@ void main(int ac, char** av)
 	while (XNextEvent(d, &event), event.type != Expose)
 		;
 
-	/*
-	* Get the window's actual width and height.
-	*/
+	/* 	* Get the window's actual width and height. */
 	XGetGeometry(d, w, &root, &wx, &wy, &width, &height, &bwidth, &depth);
 
-	/*
-	* Initialization done, window on screen; time for real work.
-	*/
-
+	/* * Initialization done, window on screen; time for real work.	*/
 	{
 		double X[3];
 		int i, n = 0;
@@ -168,9 +164,7 @@ void main(int ac, char** av)
 		}
 	}
 
-	/*
-	* Now hang out.  Let the window manager kill us.
-	*/
+	/* * Now hang out.  Let the window manager kill us. */
 	while (1)
 		XNextEvent(d, &event);
 
@@ -179,8 +173,7 @@ void main(int ac, char** av)
 
 double ByteToReal(unsigned char b)
 {
-	/* note that there will be some gaps since we're only using the
-	   equivalent of an 8-bit decimal here*/
+	/* note that there will be some gaps since we're only using the equivalent of an 8-bit decimal here*/
 	return b / 256.0;
 }
 
@@ -210,3 +203,4 @@ void PolarToCartesian(Polar* P, Cartesian* C)
 	/* We can assign colors based on x, y, z, r, theta / pi or phi / (2 * pi) */
 	C->Color = ScaleColor(C->y);
 }
+

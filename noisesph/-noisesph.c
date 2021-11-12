@@ -98,7 +98,8 @@ void InitPoints(void) {
 		MidA = Scale;
 		MidY = getmaxy() / 2;
 	}
-	if (MidY < Scale) Scale = MidY;
+	if (MidY < Scale) 
+		Scale = MidY;
 }
 
 /* Convert degrees to radians */
@@ -300,3 +301,4 @@ void main(int argc, char* argv[])
 #endif
 	exit(EXIT_SUCCESS);
 }
+
