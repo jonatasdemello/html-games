@@ -396,68 +396,15 @@ if(1==0)
 // -----------------------------------------------------------------------------------------------------
 
 /*
-var c = document.getElementById("myCanvas");
-var ctx = c.getContext("2d");
-ctx.moveTo(0,0);
-ctx.lineTo(200,100);
-ctx.stroke();
-// circle
-ctx.beginPath();
-ctx.arc(95,50,40,0,2*Math.PI);
-ctx.stroke();
-// text 
-ctx.font = "30px Arial";
-ctx.fillText("Hello World",10,50);
-
-// Create gradient
-var grd = ctx.createLinearGradient(0,0,200,0);
-grd.addColorStop(0,"red");
-grd.addColorStop(1,"white");
-
-// Fill with gradient
-ctx.fillStyle = grd;
-ctx.fillRect(10,10,150,80);
-
-// Create gradient
-var grd = ctx.createRadialGradient(75,50,5,90,60,100);
-grd.addColorStop(0,"red");
-grd.addColorStop(1,"white");
-
-// Fill with gradient
-ctx.fillStyle = grd;
-ctx.fillRect(10,10,150,80);
-
-var img = document.getElementById("scream");
-ctx.drawImage(img,10,10);
-*/
-
-/*
 	Pickover, Clifford A. 1995. "Random number generators: pretty good ones are easy to find."  
 	The Visual Computer (1005) 11:369-377.
 	See also Pickover, nd., "Keys to Infinity." Chapter 31.
 */
-var M_PI = 3.14159267;
-
-// var RZ = 0;
-// var RX = 0
-// var RY = 0;
-// var MidA, MidB, MidC, MidY;
-// var X = [];//3
-// var SRANGE;
-// var qtd = 0.0;
-// var error,
-// 	n = 0,
-// 	tmp,
-// 	ScreenInit = 1,
-// 	lag = 1,
-// 	mode = 0,  // 0 = 8-bit samples, 1 = 16 bit samples
-// 	sr = 0,
-// 	skip = 0; // plot only every skipth point
-
+const M_PI = 3.14159267;
 var C = { x: 0.0, y: 0.0, z: 0.0, color: 0 }; // Cartesian
 var P = { r: 0.0, theta: 0.0, phi: 0.0 }; // Polar
-const SCALE = 500;
-const MAX = 1500;
+const SCALE = 200;
+const MAX = 3500;
 let randomNumbers = [];
 let points = [];
 
@@ -465,9 +412,6 @@ let points = [];
 function rads(x) {
 	return ((x * 2.0) * Math.PI / 360.0);
 }
-
-
-
 /* Rotate C along X, Y and Z axes */
 function RotateZ(C, angle) //Cartesian
 {
@@ -491,6 +435,7 @@ function RotateY(C, angle) //Cartesian
 	z = (C.z * Math.cos(y)) - (C.x * Math.sin(y));
 	C.z = z; C.x = x;
 }
+
 /* Projects 3d coordinates to a 2d screen */
 function project(x) {
 	return (Math.ceil(SCALE * x));
@@ -498,13 +443,7 @@ function project(x) {
 function Plot(C) // Cartesian
 {
 	rotate(C);
-
 	putpixel(MidA + project(C.x), MidY - project(C.y), C.Color);
-
-	if (triple) {
-		putpixel(MidB + project(C.y), MidY - project(C.z), C.Color);
-		putpixel(MidC + project(C.z), (3 * MidY) - project(C.x), C.Color);
-	}
 }
 
 /* Converts 3-d polar coordinates to cartesian coordinates */
@@ -546,33 +485,44 @@ function PlotPoint()
 
 	for (var i = 0; i < points.length; i++) {
 		ctx.fillStyle = points[i].color;
-		let x = points[i].x * SCALE; 
-		let y = points[i].y * SCALE;
+		let x = project(points[i].x); 
+		let y = project(points[i].y);
 		// console.log("x,y:" ,x ,y);
 		ctx.fillRect(x, y, constants.pointWidth, constants.pointWidth);
 	}
 }
 function ConvertRandToPoint()
 {
-	for (var i=0; i < (randomNumbers.length-3); i++)
+	let n = 0;
+	for (var i=0; i < (randomNumbers.length); )
 	{
-		P.r = Math.sqrt(randomNumbers[(i + 2) % 3]);
-		P.theta = M_PI * randomNumbers[(i + 1) % 3];
-		P.phi = 2 * M_PI * randomNumbers[i];
+		let PT = [0,0,0];
+		// read the first 3 values
+		for (var j = 0; j < 3; j++)
+		{
+			PT[j] = randomNumbers[i];
+			i++;
+		}
 
+		let polar = { r: 0.0, theta: 0.0, phi: 0.0 }; // Polar
+		polar.r = Math.sqrt(PT[(n + 2) % 3]);
+		polar.theta = M_PI * PT[(n + 1) % 3];
+		polar.phi = 2 * M_PI * PT[n];
+
+		n = ++n % 3;
+
+		/* Converts 3-d polar coordinates to cartesian coordinates */
 		let c = { x: 0.0, y: 0.0, z: 0.0, color: 0 }; // Cartesian
-		c.x = P.r * Math.sin(P.phi) * Math.cos(P.theta);
-		c.y = P.r * Math.sin(P.phi) * Math.sin(P.theta);
-		c.z = P.r * Math.cos(P.phi);
+		c.x = polar.r * Math.sin(polar.phi) * Math.cos(polar.theta);
+		c.y = polar.r * Math.sin(polar.phi) * Math.sin(polar.theta);
+		c.z = polar.r * Math.cos(polar.phi);
 
+		/* We can assign colors based on C.x, C.y, C.z, or P.r, P.theta / pi or P.phi / (2 * pi) */
 		var colorMap= ["#060", "#090", "#0C0", "#0F0", "#9F0", "#9C0", "#990", "#960", "#930", "#900", "#C00"];
 		var pos = Math.floor(Math.random() * colorMap.length);
 		c.color = colorMap[pos];
 		
 		points.push(c);
-
-		// console.log("P", P);
-		// console.log("C", C);
 	}
 	// console.log(points);
 }
@@ -582,6 +532,7 @@ function GenerateRandomNumbers()
 	var n, num, x, xi;
 	x = 0.1; // seed
 	for (n = 0; n < MAX; n++) {
+		// x = Math.log(x); // this will generate a different shape
 		x = 100 * Math.log(x);
 		xi = Math.trunc(x);
 		x = Math.abs(x - xi);
@@ -589,9 +540,6 @@ function GenerateRandomNumbers()
 	}
 	//console.log(randomNumbers);
 }
-GenerateRandomNumbers();
-ConvertRandToPoint();
-
 
 function processKeyDown1(evt) {
 	if (evt.ctrlKey) {
@@ -653,9 +601,11 @@ function processKeyDown1(evt) {
 function onloadInit() {
 	// Create and append the canvas element to the DOM.
 	appendCanvasElement();
-	// Draw the surface on the canvas.
-	//surface.draw();
+
+	GenerateRandomNumbers();
+	ConvertRandToPoint();
 	PlotPoint();
+
 	// Used to detect if the control key has been pressed.
 	document.addEventListener('keydown', processKeyDown1, false);
 }
