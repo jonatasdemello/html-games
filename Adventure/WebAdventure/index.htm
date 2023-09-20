@@ -6,6 +6,10 @@
 	<link href="https://fonts.googleapis.com/css?family=Berkshire+Swash" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css?family=Acme" rel="stylesheet">
 	<style type="text/css">
+		* {
+			font-family: 'Acme', sans-serif;
+		}
+
 		body {
 			margin: 30px;
 			font-family: 'Acme', sans-serif;
@@ -29,9 +33,9 @@
 
 		#divMap {
 			/* to be removed later */
-			position: fixed;
+			/* position: fixed;
 			bottom: 0;
-			right: 0;
+			right: 0; */
 			right: 300px;
 			width: 300px;
 		}
@@ -108,8 +112,6 @@
 	<div id="gameSection">
 		<h1>Adventure</h1>
 
-		<div id="divMap"><img src="images/_map2.jpg" /></div>
-
 		<section class="wrapper">
 			<div class="leftCol">
 				<div id="divLocationImage"><img id="locationImage" src="images/img.png" width="350" height="250" />
@@ -126,13 +128,13 @@
 					<div class="leftCol">
 						<div id="divDirectionsToMove">
 							<table>
-								<tr align="center">
+								<tr>
 									<td>&nbsp;</td>
 									<td><img class="img-direction" id="mv_north" src="images/mv_north.png"
 											onclick="MovePlayer('N');" width="30" height="30" /></td>
 									<td>&nbsp;</td>
 								</tr>
-								<tr align="center">
+								<tr>
 									<td><img class="img-direction" id="mv_west" src="images/mv_west.png"
 											onclick="MovePlayer('O');" width="30" height="30" /></td>
 									<td><img class="img-center" id="mv_center" src="images/mv_center.png" width="30"
@@ -140,7 +142,7 @@
 									<td><img class="img-direction" id="mv_east" src="images/mv_east.png"
 											onclick="MovePlayer('L');" width="30" height="30" /></td>
 								</tr>
-								<tr align="center">
+								<tr>
 									<td>&nbsp;</td>
 									<td><img class="img-direction" id="mv_south" src="images/mv_south.png"
 											onclick="MovePlayer('S');" width="30" height="30" /></td>
@@ -157,13 +159,22 @@
 			</div>
 		</section>
 
-		<div id="divAnswer"></div>
-		<div id="divCommand">
-			<p>Command:
-				<input id="cmd_input" name="cmd_input" type="text" size="50" />
-				<input id="btn_input" name="btn_input" type="button" value="Execute!" onclick="ReadInput();" />
-			</p>
-		</div>
+		<section class="user">
+			<div id="divAnswer"></div>
+			<div id="divCommand">
+				<p>Command:
+					<input id="cmd_input" name="cmd_input" type="text" size="50" />
+					<input id="btn_input" name="btn_input" type="button" value="Execute!" onclick="ReadInput();" />
+				</p>
+			</div>
+
+		</section>
+
+		<section class="map">
+			<button onclick="toggleMap()">Toggle Map</button>
+			<div id="divMap" style="display: none;"><img src="images/_map2.jpg" /></div>
+		</section>
+		
 	</div>
 
 	<script type="text/javascript">
@@ -175,14 +186,22 @@
 					document.getElementById("btn_input").click();
 				}
 			});
+		// map
+		function toggleMap() {
+ 			var el = document.getElementById("divMap");
+			 if (el.style.display === "none") {
+				el.style.display = "block";
+			} else {
+				el.style.display = "none";
+			}
+		}
 
 		// use Global variables for now to keep it simple
 		var currentLocation = 15; // L=15 Local onde o jogador se encontra no momento
-		var N = 0, S = 0, E = 0, W = 0;   // Saídas do local (1=há saída, 0=sem saída)
+		var move_N = 0, move_S = 0, move_E = 0, move_W = 0;   // Saídas do local (1=há saída, 0=sem saída)
 
-		var NB = 7; // Número de objetos do adventure, usado para dimensionar matrizes e laços FOR...NEXT
-		var LA = 0; // Sinalizador do estado da lâmpada (1=acesa, 0=apagada)
-		var TA = 0; // Sinalizador do coletor de impostos
+		var flag_LA = 0; // Sinalizador do estado da lâmpada (1=acesa, 0=apagada)
+		var flag_TA = 0; // Sinalizador do coletor de impostos
 
 		var input_CMD = ""; // Entrada completa do jogador, antes de ser dividida em verbo e substantivo
 		var input_VS = ""; // Verbo em CMD
@@ -191,44 +210,41 @@
 		var input_I = 0;  // Contém número correspondente a um verbo, usado para selecionar a rotina adequada
 		
 		var output_MSG = ""; // Descricao do Local Atual
-
 		
-		// G    Contém o número do objeto deixado de lado pelo jogador (que é o elemento "G" na matriz "OB")
-		
-		var RS = []; // R$(18) Matriz de verbos
-		var R = [];  // R(18)  Matriz de números de verbos
+		var verb_RS = []; // R$(18) Matriz de verbos
+		var verb_RN = []; // R(18)  Matriz de números de verbos
 
-		R[0] = 1;   RS[0] = "NORTE";
-		R[1] = 1;   RS[1] = "SUL";
-		R[2] = 1;   RS[2] = "LESTE";
-		R[3] = 1;   RS[3] = "OESTE";
-		R[4] = 2;   RS[4] = "PEGAR";
-		R[5] = 2;   RS[5] = "APANHAR";
-		R[6] = 2;   RS[6] = "CARREGAR";
-		R[7] = 3;   RS[7] = "COLOCAR";
-		R[8] = 3;   RS[8] = "DEIXAR";
-		R[9] = 3;   RS[9] = "LARGAR";
-		R[10] = 4;  RS[10] = "PUXAR";
-		R[11] = 5;  RS[11] = "NADAR";
-		R[12] = 6;  RS[12] = "ESVAZIAR";
-		R[13] = 7;  RS[13] = "ACENDER";
-		R[14] = 8;  RS[14] = "DESISTIR";
-		R[15] = 9;  RS[15] = "LISTAR";
-		R[16] = 10; RS[16] = "MATAR";
-		R[17] = 10; RS[17] = "ATIRAR";
-		R[18] = 11; RS[18] = "AJUDAR";
+		verb_RN[0] = 1;   verb_RS[0] = "NORTE";
+		verb_RN[1] = 1;   verb_RS[1] = "SUL";
+		verb_RN[2] = 1;   verb_RS[2] = "LESTE";
+		verb_RN[3] = 1;   verb_RS[3] = "OESTE";
+		verb_RN[4] = 2;   verb_RS[4] = "PEGAR";
+		verb_RN[5] = 2;   verb_RS[5] = "APANHAR";
+		verb_RN[6] = 2;   verb_RS[6] = "CARREGAR";
+		verb_RN[7] = 3;   verb_RS[7] = "COLOCAR";
+		verb_RN[8] = 3;   verb_RS[8] = "DEIXAR";
+		verb_RN[9] = 3;   verb_RS[9] = "LARGAR";
+		verb_RN[10] = 4;  verb_RS[10] = "PUXAR";
+		verb_RN[11] = 5;  verb_RS[11] = "NADAR";
+		verb_RN[12] = 6;  verb_RS[12] = "ESVAZIAR";
+		verb_RN[13] = 7;  verb_RS[13] = "ACENDER";
+		verb_RN[14] = 8;  verb_RS[14] = "DESISTIR";
+		verb_RN[15] = 9;  verb_RS[15] = "LISTAR";
+		verb_RN[16] = 10; verb_RS[16] = "MATAR";
+		verb_RN[17] = 10; verb_RS[17] = "ATIRAR";
+		verb_RN[18] = 11; verb_RS[18] = "AJUDAR";
 
-		var OB  = []; //  OB[6] = Posição onde esta o objeto no mapa
-		var OBS = []; //  OBS[6] = Nome do Objeto
-		var OBD = []; //  OBD[6] = Descrição do Objeto
+		var obj_OBP = []; //  obj_OBP[6] = Posição onde esta o objeto no mapa
+		var obj_OBS = []; //  obj_OBS[6] = Nome do Objeto
+		var obj_OBD = []; //  obj_OBD[6] = Descrição do Objeto
 
-		OB[0] = 4;  OBS[0] = "SACO";     OBD[0] = "Há um saco de bolas de gude aqui.";
-		OB[1] = 14; OBS[1] = "TIJOLO";   OBD[1] = "Tem um tijolo no chao.";
-		OB[2] = 24; OBS[2] = "CORRENTE"; OBD[2] = "Ha uma corrente pendurada sobre o trono.";
-		OB[3] = 0;  OBS[3] = "REVOLVER"; OBD[3] = "Tem um revolver no chao.";
-		OB[4] = 0;  OBS[4] = "OLHO";     OBD[4] = "Um olho cravejado de brilhantes esta no chao.";
-		OB[5] = 22; OBS[5] = "LAMPADA";  OBD[5] = "Voce esta diante de uma lampada.";
-		OB[6] = 0;  OBS[6] = "COLETOR";  OBD[6] = "De repente surge um coletor de impostos.";
+		obj_OBP[0] = 4;    obj_OBS[0] = "SACO";      obj_OBD[0] = "Há um SACO de bolas de gude aqui.";
+		obj_OBP[1] = 14;   obj_OBS[1] = "TIJOLO";    obj_OBD[1] = "Tem um TIJOLO no chao.";
+		obj_OBP[2] = 24;   obj_OBS[2] = "CORRENTE";  obj_OBD[2] = "Ha uma CORRENTE pendurada sobre o trono.";
+		obj_OBP[3] = 0;    obj_OBS[3] = "REVOLVER";  obj_OBD[3] = "Tem um REVOLVER no chao.";
+		obj_OBP[4] = 0;    obj_OBS[4] = "OLHO";      obj_OBD[4] = "Um OLHO cravejado de brilhantes esta no chao.";
+		obj_OBP[5] = 22;   obj_OBS[5] = "LAMPADA";   obj_OBD[5] = "Voce esta diante de uma LAMPADA.";
+		obj_OBP[6] = 0;    obj_OBS[6] = "COLETOR";   obj_OBD[6] = "De repente surge um coletor de impostos.";
 
 		// Game starts here:
 		ShowInstructions();
@@ -274,12 +290,12 @@
 			// input_I: Contém número correspondente a um verbo, usado para selecionar a rotina adequada
 			input_I = 0;
 			for (let i = 0; i < 19; i++) {
-				if (RS[i] == input_VS) { // only verbs
-					input_I = R[i];
+				if (verb_RS[i] == input_VS) { // only verbs
+					input_I = verb_RN[i];
 					break;
 				}
 			}
-			// keep the first letter (N, S, E, W)
+			// keep the first letter (N, S, E, W) only
 			input_CMD = input_VS.substring(0, 1);
 
 			// debug:
@@ -340,7 +356,7 @@
 			output_MSG = "";
 			switch (direction) {
 				case "N":
-					if (N == 1) {
+					if (move_N == 1) {
 						currentLocation = currentLocation - 6;
 					}
 					else {
@@ -348,7 +364,7 @@
 					}
 					break;
 				case "S":
-					if (S == 1) {
+					if (move_S == 1) {
 						currentLocation = currentLocation + 6;
 					}
 					else {
@@ -356,7 +372,7 @@
 					}
 					break;
 				case "L":
-					if (E == 1) {
+					if (move_E == 1) {
 						currentLocation = currentLocation + 1;
 					}
 					else {
@@ -364,7 +380,7 @@
 					}
 					break;
 				case "O":
-					if (W == 1) {
+					if (move_W == 1) {
 						currentLocation = currentLocation - 1;
 					}
 					else {
@@ -377,9 +393,9 @@
 
 		function ShowObjectsHere(currentLocation) {
 			let txt = "<span class='msg-direction'>Aqui tem:</span><br/>";
-			for (let i = 0; i < OB.length; i++) {
-				if (OB[i] == currentLocation) {
-					txt = txt + " &bull; " + OBD[i] + "<br/>";
+			for (let i = 0; i < obj_OBP.length; i++) {
+				if (obj_OBP[i] == currentLocation) {
+					txt = txt + " &bull; " + obj_OBD[i] + "<br/>";
 				}
 			}
 			document.getElementById("divObjectsHere").innerHTML = txt;
@@ -387,9 +403,9 @@
 
 		function ShowInventory() {
 			var txt = "<span class='msg-direction'>Voce tem:</span> <br/>";
-			for (let i = 0; i < OB.length; i++) {
-				if (OB[i] == -1) {
-					txt = txt + " &bull; " + OBS[i] + "<br/>";
+			for (let i = 0; i < obj_OBP.length; i++) {
+				if (obj_OBP[i] == -1) {
+					txt = txt + " &bull; " + obj_OBS[i] + "<br/>";
 				}
 			}
 			document.getElementById("divPlayerObjects").innerHTML = txt;
@@ -403,29 +419,29 @@
 		function ShowDirections(currentLocation) {
 			let txt = "<span class='msg-direction'>Voce pode seguir:</span><br/>";
 
-			if (N == 1) {
-				txt += " &bull; Norte <br/>";
+			if (move_N == 1) {
+				txt += " &bull; Norte N<br/>";
 				document.getElementById("mv_north").src = "./images/mv_north.png";
 			}
 			else {
 				document.getElementById("mv_north").src = "./images/mv_empty.png";
 			}
-			if (S == 1) {
-				txt += " &bull; Sul <br/>";
+			if (move_S == 1) {
+				txt += " &bull; Sul S<br/>";
 				document.getElementById("mv_south").src = "./images/mv_south.png";
 			}
 			else {
 				document.getElementById("mv_south").src = "./images/mv_empty.png";
 			}
-			if (E == 1) {
-				txt += " &bull; Leste <br/>";
+			if (move_E == 1) {
+				txt += " &bull; Leste E<br/>";
 				document.getElementById("mv_east").src = "./images/mv_east.png";
 			}
 			else {
 				document.getElementById("mv_east").src = "./images/mv_empty.png";
 			}
-			if (W == 1) {
-				txt += " &bull; Oeste <br/>";
+			if (move_W == 1) {
+				txt += " &bull; Oeste W<br/>";
 				document.getElementById("mv_west").src = "./images/mv_west.png";
 			}
 			else {
@@ -442,57 +458,96 @@
 			switch (currentLocation) {
 				case 4:
 					locDesc = "Voce esta do lado de fora de uma grande construcao.";
-					N = 0; E = 0; S = 1; W = 0;
+					move_N = 0;
+					move_E = 0;
+					move_S = 1;
+					move_W = 0;
 					break;
 				case 7:
 					locDesc = "Voce esta a beira de um grande rio.";
-					N = 0; E = 1; S = 0; W = 0;
+					move_N = 0;
+					move_E = 1;
+					move_S = 0;
+					move_W = 0;
 					break;
 				case 8:
 					locDesc = "Voce esta numa floresta petrificada.";
-					N = 0; E = 0; S = 1; W = 1;
+					move_N = 0;
+					move_E = 0;
+					move_S = 1;
+					move_W = 1;
 					break;
 				case 10:
 					locDesc = "Voce esta numa sala muito suja.";
-					N = 1; E = 1; S = 1; W = 0;
+					move_N = 1;
+					move_E = 1;
+					move_S = 1;
+					move_W = 0;
 					break;
 				case 11:
 					locDesc = "Voce esta num quarto escuro.";
-					if (OB[5] == -1 && LA == 1) {  // tem lanterna? esta acesa?
-						N = 0; E = 0; S = 1; W = 1;
+					if (obj_OBP[5] == -1 && flag_LA == 1) {  // tem lanterna? esta acesa?
+						move_N = 0;
+						move_E = 0;
+						move_S = 1;
+						move_W = 1;
 					}
 					else {
-						N = 0; E = 0; S = 0; W = 0;
+						move_N = 0;
+						move_E = 0;
+						move_S = 0;
+						move_W = 0;
 						locDesc = locDesc + "<br/> Esta muito escuro para ver as saidas.";
 					}
 					break;
 				case 14:
 					locDesc = "Voce esta num atalho enlameado.";
-					N = 1; E = 1; S = 0; W = 0;
+					move_N = 1;
+					move_E = 1;
+					move_S = 0;
+					move_W = 0;
 					break;
 				case 15:
 					locDesc = "Voce esta na entrada da cidade oculta.";
-					N = 0; E = 1; S = 0; W = 1;
+					move_N = 0;
+					move_E = 1;
+					move_S = 0;
+					move_W = 1;
 					break;
 				case 16:
 					locDesc = "Voce esta no hall de entrada.";
-					N = 1; E = 1; S = 1; W = 1;
+					move_N = 1;
+					move_E = 1;
+					move_S = 1;
+					move_W = 1;
 					break;
 				case 17:
 					locDesc = "Voce esta no patio.";
-					N = 1; E = 1; S = 0; W = 1;
+					move_N = 1;
+					move_E = 1;
+					move_S = 0;
+					move_W = 1;
 					break;
 				case 18:
 					locDesc = "Voce esta no jardim.";
-					N = 0; E = 0; S = 1; W = 1;
+					move_N = 0;
+					move_E = 0;
+					move_S = 1;
+					move_W = 1;
 					break;
 				case 22:
 					locDesc = "Voce esta no guarda-loucas.";
-					N = 1; E = 0; S = 0; W = 0;
+					move_N = 1;
+					move_E = 0;
+					move_S = 0;
+					move_W = 0;
 					break;
 				case 24:
 					locDesc = "Voce esta na sala do trono.";
-					N = 1; E = 0; S = 0; W = 0;
+					move_N = 1;
+					move_E = 0;
+					move_S = 0;
+					move_W = 0;
 					break;
 			}
 			let txt = "<span class='msg-direction'>Location:</span><br/>";
@@ -503,19 +558,19 @@
 
 		function Action_Pegar() {
 			output_MSG = "Nao e possivel pegar " + input_NS;
-			for (let i = 0; i < OB.length; i++) {
-				if (OBS[i] == input_NS) {
-					if (OB[i] == -1) {
-						output_MSG = "Voce ja pegou " + OBS[i];
+			for (let i = 0; i < obj_OBP.length; i++) {
+				if (obj_OBS[i] == input_NS) {
+					if (obj_OBP[i] == -1) {
+						output_MSG = "Voce ja pegou " + obj_OBS[i];
 						break;
 					}
-					else if (OB[i] != currentLocation) {
-						output_MSG = OBS[i] + " nao esta aqui";
+					else if (obj_OBP[i] != currentLocation) {
+						output_MSG = obj_OBS[i] + " nao esta aqui";
 						break;
 					}
-					else if (OB[i] == currentLocation) {
-						OB[i] = -1;
-						output_MSG = "Voce pegou o " + OBS[i];
+					else if (obj_OBP[i] == currentLocation) {
+						obj_OBP[i] = -1;
+						output_MSG = "Voce pegou o " + obj_OBS[i];
 						break;
 					}
 				}
@@ -524,15 +579,15 @@
 
 		function Action_Deixar() {
 			output_MSG = "Nao e possivel deixar " + input_NS;
-			for (let i = 0; i < OB.length; i++) {
-				if (OBS[i] == input_NS) {
-					if (OB[i] != -1) {
+			for (let i = 0; i < obj_OBP.length; i++) {
+				if (obj_OBS[i] == input_NS) {
+					if (obj_OBP[i] != -1) {
 						output_MSG = "Voce esta carregando " + input_NS;
 						break;
 					}
-					else if (OB[i] == -1) {
-						OB[i] = currentLocation;
-						output_MSG = "Voce deixou o " + OBS[i];
+					else if (obj_OBP[i] == -1) {
+						obj_OBP[i] = currentLocation;
+						output_MSG = "Voce deixou o " + obj_OBS[i];
 						break;
 					}
 				}
@@ -546,14 +601,14 @@
 			else if (currentLocation != 24) {
 				output_MSG = "Nao esta aqui.";
 			}
-			else if (OBS[2] != input_NS) {
+			else if (obj_OBS[2] != input_NS) {
 				output_MSG = "Voce nao pode " + input_VS + " " + input_NS;
 			}
-			else if (OB[4] != -1 && currentLocation == 24) {
-				// OBS[4] = "OLHO"
+			else if (obj_OBP[4] != -1 && currentLocation == 24) {
+				// obj_OBS[4] = "OLHO"
 				output_MSG = "Voce cai dentro do vaso e vai embora com a descarga.";
 			}
-			else if (OB[4] == -1 && currentLocation == 24) {
+			else if (obj_OBP[4] == -1 && currentLocation == 24) {
 				output_MSG = "Voce completou a aventura!";
 			}
 		}
@@ -562,14 +617,14 @@
 			if (currentLocation != 7) {
 				output_MSG = "Nadar Onde?";
 			}
-			else if (OB[1] == -1) {
-				// OBS[1] = "TIJOLO" 
+			else if (obj_OBP[1] == -1) {
+				// obj_OBS[1] = "TIJOLO" 
 				output_MSG = "Tijolos sao muito pesados. Voce se afogou!";
 			}
-			else if (OB[3] > -1) { 
-				// OBS[3] = "REVOLVER"
+			else if (obj_OBP[3] > -1) { 
+				// obj_OBS[3] = "REVOLVER"
 				output_MSG = "Voce achou um revolver!";
-				OB[3] = -1;
+				obj_OBP[3] = -1;
 			}
 			else {
 				output_MSG = "Voce se molhou todo.";
@@ -577,18 +632,18 @@
 		}
 
 		function Action_Acender() {
-			// OBS[5] = "LAMPADA"
-			if (OBS[5] != input_NS) {
+			// obj_OBS[5] = "LAMPADA"
+			if (obj_OBS[5] != input_NS) {
 				output_MSG = "Voce nao pode " + input_VS + " " + input_NS;
 			}
-			else if (OB[5] != -1) {
+			else if (obj_OBP[5] != -1) {
 				output_MSG = "Voce nao pode " + input_VS + " o que nao tem.";
 			}
-			else if (OB[5] == -1 && LA == 1) {
+			else if (obj_OBP[5] == -1 && flag_LA == 1) {
 				output_MSG = "Ja esta acesa.";
 			}
-			else if (OB[5] == -1 && LA == 0) {
-				LA = 1;
+			else if (obj_OBP[5] == -1 && flag_LA == 0) {
+				flag_LA = 1;
 				output_MSG = "Lampada acesa.";
 			}
 		}
@@ -596,19 +651,19 @@
 		function coletorRnd() {
 			// randomly select 
 			var rnd = Math.floor(Math.random() * 15);
-			if (rnd == 1 && TA == 0) {
-				OB[6] = currentLocation; // coloca o coletor no local
-				TA = 1; // Flag Coletor
+			if (rnd == 1 && flag_TA == 0) {
+				obj_OBP[6] = currentLocation; // coloca o coletor no local
+				flag_TA = 1; // Flag Coletor
 			}
 		}
 
 		function Action_Coletor() {
-			OB[6] = 0; // hide coletor
+			obj_OBP[6] = 0; // hide coletor
 			coletorRnd();
 
 			let obj = 0;
-			for (let i = 0; i < NB; i++) {
-				if (OB[i] == -1) {
+			for (let i = 0; i < obj_OBP.length; i++) {
+				if (obj_OBP[i] == -1) {
 					obj = obj + 1;
 				}
 			}
@@ -617,11 +672,11 @@
 			}
 			else {
 				while (true) {
-					let pos = Math.floor(Math.random() * NB);
+					let pos = Math.floor(Math.random() * obj_OBP.length);
 					console.log("coletor pos: " + pos);
-					if (OB[pos] == -1) {
-						output_MSG = "Ele toma o " + OBS[pos] + " de voce";
-						OB[pos] = 0;
+					if (obj_OBP[pos] == -1) {
+						output_MSG = "Ele toma o " + obj_OBS[pos] + " de voce";
+						obj_OBP[pos] = 0;
 						break;
 					}
 				}
@@ -635,16 +690,16 @@
 		}
 
 		function Action_Esvaziar() {
-			if (OB[0] != -1) { 
-				// OBS[0] = "SACO"
+			if (obj_OBP[0] != -1) { 
+				// obj_OBS[0] = "SACO"
 				output_MSG = "Voce nao pode " + input_VS + " o que nao tem.";
 			}
 			else if (input_NS != "SACO") {
 				output_MSG = "Isso nao pode ser esvaziado.";
 			}
-			else if (OB[0] == -1) {
+			else if (obj_OBP[0] == -1) {
 				output_MSG = "As bolinhas se espalham pelo chao.";
-				OB[4] = currentLocation; // OBS[4] = "OLHO"
+				obj_OBP[4] = currentLocation; // obj_OBS[4] = "OLHO"
 			}
 		}
 
@@ -653,29 +708,29 @@
 		}
 
 		function Action_Matar() {
-			//OBS[3] = "REVOLVER"
-			if (OB[3] != -1) {
+			//obj_OBS[3] = "REVOLVER"
+			if (obj_OBP[3] != -1) {
 				output_MSG = "Com o que?";
 			}
-			else if (OB[6] != currentLocation) {
-				// OBS[6] = "COLETOR"
+			else if (obj_OBP[6] != currentLocation) {
+				// obj_OBS[6] = "COLETOR"
 				output_MSG = input_VS + " quem?";
 			}
-			else if (OB[3] == -1 && OB[6] == -1) {
-				output_MSG = "Voce matou o " + OB[6];
-				OB[6] = 0;
+			else if (obj_OBP[3] == -1 && obj_OBP[6] == -1) {
+				output_MSG = "Voce matou o " + obj_OBP[6];
+				obj_OBP[6] = 0;
 			}
 		}
 
 		function Action_Ajudar() {
 			// rio + tijolo
-			if (currentLocation == 7 || OB[1] == -1) {
+			if (currentLocation == 7 && obj_OBP[1] == -1) {
 				output_MSG = "Tijolos sao muito pesados. Seu braco deve estar doendo.";
 			}
 			else {
 				let msg = "Voce pode usar: <br>";
-				for (let i=0; i< RS.length; i++){
-					msg += RS[i] +", ";
+				for (let i=0; i< verb_RS.length; i++){
+					msg += verb_RS[i] +", ";
 				}
 				output_MSG += msg;
 			}
@@ -696,5 +751,4 @@
 	</script>
 
 </body>
-
 </html>
