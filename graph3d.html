@@ -33,14 +33,17 @@
         
         ctx.beginPath();
         
+        let v1 = 130; // x-offset left
+        let v2 = 85; // y-offset down
+
         for (var X = 15; X < 235; X++)
         {
             var mMax = 999, mMin = 0;
             
             for (var Y = 16; Y < 144; Y += 3)
             {
-                var R = Math.sqrt((X - 127)*(X - 127)+(Y - 90)*(Y - 90))/15;
-                var Z = Math.round(Y + 100 * Math.exp(-R / 3) * Math.cos(R));
+                var R = Math.sqrt((X - v1)*(X - v1)+(Y - v2)*(Y - v2))/15;
+                var Z = Math.round(Y + 100 * Math.exp(-R / 3.5) * Math.cos(R));
 
                 if ( Z < mMax || Z > mMin ) plot(X, Z, ctx);
                 if ( Z < mMax ) mMax = Z;
@@ -58,7 +61,8 @@
     function plot(x, y, ctx)
     {
         ctx.fillStyle = "rgb(" + x + "," + y + ",40)";
-        ctx.fillRect(x * 2, (200-y) * 2, 1, 1);
+        ctx.fillRect(x * 2.5, (200-y) * 2, 1, 1);
+        // 200 is y-offset (down)
     }
     
     function drawAxes(canvas, ctx)

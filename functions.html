@@ -25,10 +25,10 @@
     
     <div id="msg"></div>
     
-    <p>F1 = (Math.sin(x) + Math.cos(z)) / 60;</p>
-    <p>F2 = Math.sin(x + z) / 24;</p>
-    <p>F3 = c = 50 - (x * x) - (z * z); return Math.sqrt(c * (_sgn(c) + 1)) / 30;</p>
-    <p>F4 = c = (x * x) + (z * z) + .00001; return ((sgn(parseInt(13.0/c)))/3.0) + ((sgn(parseInt(35.0/c)))/15.0);</p>
+    <p>F1: ( SIN(x) + COS(z) ) / 60;</p>
+    <p>F2: SIN(x + z) / 25;</p>
+    <p>F3: c = 50 - (x * x) - (z * z); return SQRT(c * (SGN(c) + 1)) / 30;</p>
+    <p>F4: c = (x * x) + (z * z) + .00001; return ((SGN(parseInt(13.0/c)))/3.0) + ((SGN(INT(35.0/c)))/15.0);</p>
     
 <script>
 
@@ -190,7 +190,7 @@
 
     function F2 (x, z)
     {
-        return Math.sin(x + z) / 24;
+        return Math.sin(x + z) / 25;
     }
 
     function F3 (x, z)
