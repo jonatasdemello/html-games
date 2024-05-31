@@ -9,21 +9,20 @@
     }
     canvas {
         border: 1px dashed black;
+        background-color: black;
         }
 </style>
 </head>
 <body>
-    <canvas id="drawingCanvas" width="640" height="480"></canvas>
+    <canvas id="drawingCanvas" width="680" height="480"></canvas>
 
     <div id="msg"></div>
 <script>
     window.onload = function() {
         var canvas = document.getElementById("drawingCanvas");
         var ctx = canvas.getContext("2d");
-        
     
-        ctx.font = "11px Arial";
-        ctx.fillStyle = "rgb(0,0,0)";
+        //ctx.fillRect(0, 0, 150, 75);
 
         drawAxes(canvas, ctx);
         
@@ -53,7 +52,7 @@
         ctx.stroke();
         
         performance.mark("endPerf");
-        performance.measure("durationPerf", "startPerf", "endPerf");
+        performance.measure("drawing", "startPerf", "endPerf");
 
         showResults();
     };
@@ -61,17 +60,22 @@
     function plot(x, y, ctx)
     {
         ctx.fillStyle = "rgb(" + x + "," + y + ",40)";
-        ctx.fillRect(x * 2.5, (200-y) * 2, 1, 1);
+        
         // 200 is y-offset (down)
+        v = x * 2.5;
+        h = (200-y) * 2;
+        ctx.fillRect(v, h, 2, 2);
     }
     
     function drawAxes(canvas, ctx)
     {
+        ctx.font = "11px Arial";
+        ctx.fillStyle = "Yellow";
+
         for (var x = 0; x < canvas.width; x += 50)
         {
             ctx.fillText(x, x, 10);
         }
-
         for (var y = 0; y < canvas.height; y += 50)
         {
             ctx.fillText(y, 0, y);

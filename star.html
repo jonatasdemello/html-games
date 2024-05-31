@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Canvas</title>
+    <style>
+        #myCanvas {
+            margin: 5px;
+            border: 1px solid #000000;
+            background-color: black;
+            float: left;
+            width: 600px;
+            height: 600px;
+        }
+        #myForm {
+            margin: 5px;
+            border: 1px solid #000000;
+            float: left;
+            width: 400px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="myCanvas" width="600" height="600"></canvas>
+
+    <div id="main">
+    <form id="myForm">
+        <div>
+            Param A: <input id="paramA" type="text" value="20" size="5" /><br>
+            Param B: <input id="paramB" type="text" value="30" size="5" /><br>
+            Param C: <input id="paramC" type="text" value="1.5" size="5" /><br>
+        </div>
+        <div>
+            <input type="button" id="drawP" value="Draw Point" /> &nbsp;
+            <input type="button" id="drawL" value="Draw Line" /> &nbsp;
+            <input type="button" id="clear" value="Clear" />
+        </div>
+        <pre>
+            for ( let t = 0; t &gt; 12.56; t += .05 ) {
+                x = 20 * cos(t) + 30 * cos(1.5 * t);
+                y = 20 * sin(t) - 30 * sin(1.5 * t);
+                v = 100 - y;
+                h = 128 + x;
+                plot (h*2, v*2);
+              }
+        </pre>
+    </form>
+    </div>
+<script type="text/javascript">
+    // add links to buttons
+    document.getElementById('drawP').addEventListener('click', () => {
+        draw(0);
+    });
+    document.getElementById('drawL').addEventListener('click', () => {
+        draw(1);
+    });
+    document.getElementById('clear').addEventListener('click', () => {
+        clearCanvas();
+    });
+
+    // move Axis center to middle of canvas
+    var dx = 150;
+    var dy = 150;
+    var ez = 2;
+
+    var canvas = document.getElementById("myCanvas");
+    var ctx = canvas.getContext("2d");
+
+    canvas.width = 600;
+    canvas.height = 600;
+
+    var color = "#00ff00"; // lime
+    ctx.fillStyle = color;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    
+    // show the fist time:
+    draw(0);
+
+    function draw(st) {
+        let paramA = document.getElementById('paramA').value;
+        let paramB = document.getElementById('paramB').value;
+        let paramC = document.getElementById('paramC').value;
+        //console.log(paramA, paramB, paramC);
+
+        if (st == 0) {
+            drawPoint(paramA, paramB, paramC);
+        }
+        if (st == 1) {
+            drawLine(paramA, paramB, paramC);
+        }
+    }
+
+    function drawPoint(a, b, c) {
+        clearCanvas();
+        ctx.beginPath();
+
+        let v=0, h=0, x=0, y=0;
+        for (let t=0; t<12.56; t+=.05) {
+            x = a * Math.cos(t) + b * Math.cos(c * t);
+            y = a * Math.sin(t) - b * Math.sin(c * t);
+            v = (dx - y * 2) * ez;
+            h = (dx + x * 2) * ez;
+            ctx.fillRect(h, v, 2, 2);
+        }
+        ctx.stroke();
+    }
+
+    function drawLine(a, b, c) {
+        clearCanvas();
+        ctx.beginPath();
+
+        let start=0;
+        let v=0, h=0, x=0, y=0;
+        for (let t=0; t<12.56; t+=.05) {
+            x = a * Math.cos(t) + b * Math.cos(c * t);
+            y = a * Math.sin(t) - b * Math.sin(c * t);
+            v = (dx - y * 2)*ez;
+            h = (dx + x * 2)*ez;
+
+            if (start == 0){
+                ctx.moveTo(h, v);
+                start = 1;
+            }
+
+            ctx.lineTo(h,v);
+        }
+        ctx.stroke();
+    }
+
+    function clearCanvas()
+    {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.beginPath();
+        ctx.stroke();
+    }
+
+</script>
+</body>
+</html>
