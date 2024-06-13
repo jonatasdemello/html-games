@@ -5,13 +5,26 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<title>A minimal HTML5 document</title>
+	<title>HTML5 template</title>
 </head>
 
 <body>
 	<h1>Hello HTML5!</h1>
-	<canvas id="canvas" width="700" height="500" style="border: dotted 1px;"></canvas>
-</body>
+	<canvas id="myCanvas" width="700" height="500" style="border: dotted 1px;"></canvas>
+
+<script>
+	var canvas = document.getElementById("myCanvas");
+	var ctx = canvas.getContext("2d");
+	
+	// Draw some rectangles with different color values
+	ctx.fillStyle = "red";
+	ctx.fillRect(5, 5, 200, 200);
+	ctx.fillStyle = "rgba(0,50,200,0.5)";
+	ctx.fillRect(55, 55, 200, 200);
+	ctx.fillStyle = "rgba(0,255,10,0.5)";
+	ctx.fillRect(100, 100, 200, 200);
+	ctx.stroke();
+</script>    
 
 <script>
 	// Benchmarking
@@ -24,7 +37,7 @@
 	performance.measure("durationFoo", "startFoo", "endFoo");
 
 	// Delete the Measure "durationFoo"
-	performance.clearMeasure("durationFoo");
+	performance.clearMeasures("durationFoo");
 
 	//returns us a list of all the marks that have been hit in our web application
 	var items = window.performance.getEntriesByType('mark');
@@ -43,7 +56,7 @@
 			console.log(txtmsg);
 		}
 	}
-
 </script>
 
+</body>
 </html>
