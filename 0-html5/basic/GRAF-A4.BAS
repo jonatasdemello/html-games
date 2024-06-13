@@ -1,0 +1,55 @@
+REM * * * GRAFICOS * * *
+REM 640x200 pixels
+SCREEN 8
+CLS
+COR=10
+REM * * * RETA * * *
+FOR X = -100 TO 60
+  Y = X + 30
+  V = 100 - Y
+  H = 128 + X
+  PSET (H, V), COR
+NEXT X
+INPUT "RETA", RESP$
+CLS
+REM * * * CICLOIDE * * *
+FOR T = 0 TO 6.28 STEP .05
+  M = SIN(T)
+  X = 40 * (T - M)
+  Y = 40 * (1 - COS(T))
+  V = 100 - Y
+  H = X
+  PSET (H, V), COR
+NEXT T
+INPUT "CICLOIDE", RESP$
+CLS
+REM * * * HIPOCICLOIDE * * *
+FOR T = 0 TO 12.56 STEP .05
+  X = 30 * COS(T) + 20 * COS(1.5 * T)
+  Y = 30 * SIN(T) - 20 * SIN(1.5 * T)
+  V = 100 - Y
+  H = 128 + X
+  PSET (H, V), COR
+NEXT T
+INPUT "HIPOCICLOIDE", RESP$
+CLS
+REM * * * CRUCIFORME * * *
+FOR A = 0 TO 6.28 STEP .025
+  P=1
+  IF A > 0 AND A < .05 THEN P=0
+  IF A > .735 AND A < .835 THEN P=0
+  IF A > 1.45 AND A < 1.67 THEN P=0
+  IF A > 2.305 AND A < 2.405 THEN P=0
+  IF A > 3.0 AND A < 3.24 THEN P=0
+  IF A > 3.875 AND A < 3.975 THEN P=0
+  IF A > 4.6 AND A < 4.76 THEN P=0
+  IF A > 5.445 AND A < 5.545 THEN P=0
+  IF A > 6.175 AND A < 6.28 THEN P=0
+  IF SIN(2 * A) = 0 THEN P=0
+  R = 15 / SIN(2 * A)
+  H = 128 + R * COS(A)
+  V = 100 + R * SIN(A)
+  IF P = 1 THEN PSET (H, V), COR
+NEXT A
+INPUT "CRUCIFORME", RESP$
+END

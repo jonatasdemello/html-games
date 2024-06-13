@@ -1,0 +1,10 @@
+10 REM *** STAR ***
+40 SCREEN 7
+50 CLS
+70 FOR T = 0 TO 12.56 STEP .05
+80 X = 30 * COS(T) + 20 * COS(1.5 * T)
+90 Y = 30 * SIN(T) - 20 * SIN(1.5 * T)
+100 V = 100 - Y
+110 H = 128 + X
+120 PSET (H, V), 2
+130 NEXT T
