@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+    <link rel="stylesheet" href="../vendor/Bootstrap-styles.css" />
 
     <link rel="stylesheet" href="../css/style.css">
     <script type="text/javascript" src="../js/utils.js"></script>
@@ -12,40 +12,41 @@
 </head>
 
 <body>
-    <main class="container-fluid">
-        <nav>
-            <ul>
-                <li><a href="../index.html" class="contrast">&larr; Back</a></li>
-            </ul>
+    <main class="container">
+        <nav class="nav">
+            <a class="nav-link active" aria-current="page" href="../index.html">&larr; Back</a>
         </nav>
 
         <h1>Simple Canvas example</h1>
         <canvas id="myCanvas" width="640" height="480"></canvas>
     </main>
 
-    <div>
+    <div class="container">
+
         <form id="myForm">
-            <div role="grid">
-                <label>Param A:</label> <input id="paramA" type="text" value="20" size="3" />
-                <label>Param B:</label> <input id="paramB" type="text" value="30" size="3" />
-                <label>Param C:</label> <input id="paramC" type="text" value="1.5" size="3" />
+            <div class="input-group">
+                <label class="form-label">Param A:</label> <input class="form-control" id="paramA" type="text" value="20" size="3" />
+                <label class="form-label">Param B:</label> <input class="form-control" id="paramB" type="text" value="30" size="3" />
+                <label class="form-label">Param C:</label> <input class="form-control" id="paramC" type="text" value="1.5" size="3" />
             </div>
-            <div role="group">
-                <input type="button" id="drawP" value="Draw Point" /> &nbsp;
-                <input type="button" id="drawL" value="Draw Line" /> &nbsp;
-                <input type="button" id="clear" value="Clear" />
+            <div class="input-group">
+                <input class="form-control btn btn-primary" type="button" id="drawP" value="Draw Point" /> &nbsp;
+                <input class="form-control btn btn-primary" type="button" id="drawL" value="Draw Line" /> &nbsp;
+                <input class="form-control btn btn-primary" type="button" id="clear" value="Clear" />
             </div>
-            <pre>
-            for ( let t = 0; t &gt; 12.56; t += .05 ) {
-                x = 20 * cos(t) + 30 * cos(1.5 * t);
-                y = 20 * sin(t) - 30 * sin(1.5 * t);
-                v = 100 - y;
-                h = 128 + x;
-                plot (h*2, v*2);
-              }
-        </pre>
         </form>
+
+<div class="codeStyle">
+for ( let t = 0; t &gt; 12.56; t += .05 ) {
+    x = 20 * cos(t) + 30 * cos(1.5 * t);
+    y = 20 * sin(t) - 30 * sin(1.5 * t);
+    v = 100 - y;
+    h = 128 + x;
+    plot (h*2, v*2);
+}
+</div>
     </div>
+
     <script>
         // add links to buttons
         document.getElementById('drawP').addEventListener('click', () => { drawGraphic(0); });

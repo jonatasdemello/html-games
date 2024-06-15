@@ -4,58 +4,60 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+    <link rel="stylesheet" href="../vendor/Bootstrap-styles.css" />
 
     <link rel="stylesheet" href="../css/style.css">
     <title>Canvas</title>
-
-    <script type="text/javascript" src="jquery-1.11.1.min.js"></script>
 </head>
 
 <body>
-    <main class="container-fluid">
-        <nav>
-            <ul>
-                <li><a href="../index.html" class="contrast">&larr; Back</a></li>
-            </ul>
+    <main class="container">
+        <nav class="nav">
+            <a class="nav-link active" aria-current="page" href="../index.html">&larr; Back</a>
         </nav>
 
         <h1>Simple Canvas example</h1>
         <canvas id="myCanvas" width="640" height="480"></canvas>
     </main>
+    
+    <div class="container">
 
-    <div id="form">
-        <p><strong>Based on the Book "Keys to Infinity" - Clifford A. Pickover</strong></p>
-        <form id="form2">
-            <div role="group">
-                <input type="button" id="bt1" value="F1 (6,6)" onclick="drawType(1)" /> &nbsp;
-                <input type="button" id="bt2" value="F2 (2,2)" onclick="drawType(2)" /> &nbsp;
-                <input type="button" id="bt3" value="F3 (3,3)" onclick="drawType(3)" /> &nbsp;
-                <input type="button" id="bt4" value="F4 (100,100)" onclick="drawType(4)" /> &nbsp;
-                <input type="button" id="bt5" value="F5 (2,3)" onclick="drawType(5)" /> &nbsp;
-            </div>
-            <div role="group">
-                <input type="button" id="bt6" value="F =" onclick="drawType(0)" /> &nbsp;
-                <label>Param_A:</label> <input id="paramA" type="text" value="2"  />
-                <label>Step:</label> <input id="paramC" type="text" value="1"  />
-                <label>Param_B:</label> <input id="paramB" type="text" value="2"  />
-                <input type="button" id="clear" value="Clear" />
-            </div>
-        </form>
-        <pre>
-     F1 Ranunculoid: a = 6;   b = 6;
-     F2 Cardioid:	 a = 2;   b = 2;   
-     F3 Nephroid: 	 a = 3;   b = 3;
-     F4 Amazingoid:  a = 100; b = 100;
-     F5 Fishtailoid: a = 2;   b = 3; 
-        </pre>
+        <div id="formControls">
+            <p><strong>Based on the Book "Keys to Infinity" - Clifford A. Pickover</strong></p>
+            <form id="form2">
+                <div class="input-group">
+                    <input class="form-control btn btn-primary" type="button" id="bt1" value="F1 (6,6)" onclick="drawType(1)" /> &nbsp;
+                    <input class="form-control btn btn-primary" type="button" id="bt2" value="F2 (2,2)" onclick="drawType(2)" /> &nbsp;
+                    <input class="form-control btn btn-primary" type="button" id="bt3" value="F3 (3,3)" onclick="drawType(3)" /> &nbsp;
+                    <input class="form-control btn btn-primary" type="button" id="bt4" value="F4 (2,3)" onclick="drawType(4)" /> &nbsp;
+                    <input class="form-control btn btn-primary" type="button" id="bt5" value="F5 (100,100)" onclick="drawType(5)" />
+                </div>
+                <div class="input-group">
+                    <input class="form-control btn btn-primary" type="button" id="bt6" value="F =" onclick="drawType(0)" />
+                    <label class="form-label">Param_A:</label> <input class="form-control btn btn-primary"id="paramA" type="text" value="2" />
+                    <label class="form-label">Param_B:</label> <input class="form-control btn btn-primary"id="paramB" type="text" value="2" />
+                    <label class="form-label">Step:</label> <input class="form-control btn btn-primary"id="paramC" type="text" value="1" />
+                    <input class="form-control btn btn-primary" type="button" id="clear" value="Clear" />
+                </div>
+            </form>
+        </div>
+
+        <div class="codeStyle">
+    Functions:
+    F1 - Ranunculoid :  a = 6;   b = 6;
+    F2 - Cardioid    :  a = 2;   b = 2;   
+    F3 - Nephroid    :  a = 3;   b = 3;
+    F4 - Fishtailoid :  a = 2;   b = 3; 
+    F5 - Amazingoid  :  a = 100; b = 100;
+        </div>
+        
+        <div id="msg"></div>
     </div>
-    <div id="msg"></div>
 
-    <script type="text/javascript">
+    <script>
         window.onload = function () {
             drawType(1);
-         }
+        }
 
         // move Axis center to middle of canvas
         var dx = 300;
@@ -113,11 +115,11 @@
                     break;
                 case 4:
                     clearCanvas();
-                    draw(100, 100, '#2E2EFE');
+                    draw(2, 3, '#40FF00');
                     break;
                 case 5:
                     clearCanvas();
-                    draw(2, 3, '#40FF00');
+                    draw(100, 100, '#2E2EFE');
                     break;
             }
         }

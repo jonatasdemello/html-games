@@ -4,35 +4,47 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+    <link rel="stylesheet" href="../vendor/Bootstrap-styles.css" />
 
     <link rel="stylesheet" href="../css/style.css">
     <title>Canvas</title>
 </head>
 
 <body>
-    <main class="container-fluid">
-        <nav>
-            <ul>
-                <li><a href="../index.html" class="contrast">&larr; Back</a></li>
-            </ul>
+    <main class="container">
+        <nav class="nav">
+            <a class="nav-link active" aria-current="page" href="../index.html">&larr; Back</a>
         </nav>
 
         <h1>Simple Canvas example</h1>
         <canvas id="myCanvas" width="640" height="480"></canvas>
     </main>
 
-    <form id="form1">
-        <div role="group">
-            <input type="button" id="bt0" value="Clear" onclick="clearCanvas()" /> &nbsp;
-            <input type="button" id="bt1" value="F1" onclick="drawType(1)" /> &nbsp;
-            <input type="button" id="bt2" value="F2" onclick="drawType(2)" /> &nbsp;
-            <input type="button" id="bt3" value="F3" onclick="drawType(3)" /> &nbsp;
-            <input type="button" id="bt4" value="F4" onclick="drawType(4)" /> &nbsp;
+    <div class="container">
+        <form>
+            <div class="input-group">
+                <input class="form-control btn btn-primary" type="button" id="bt1" value="F1" onclick="drawType(1)" /> &nbsp;
+                <input class="form-control btn btn-primary" type="button" id="bt2" value="F2" onclick="drawType(2)" /> &nbsp;
+                <input class="form-control btn btn-primary" type="button" id="bt3" value="F3" onclick="drawType(3)" /> &nbsp;
+                <input class="form-control btn btn-primary" type="button" id="bt4" value="F4" onclick="drawType(4)" /> &nbsp;
+                <input class="btn btn-secondary" type="button" id="bt0" value="Clear" onclick="clearCanvas()" /> &nbsp;
+            </div>
+        </form>
+        
+        <div id="msg"></div>
+        <div class="codeStyle">
+            F1: 
+                return ( SIN(x) + COS(z) ) / 60;
+            F2: 
+                retun SIN(x + z) / 25;
+            F3: 
+                c = 50 - (x * x) - (z * z); 
+                return SQRT(c * (SGN(c) + 1)) / 30;
+            F4: 
+                c = (x * x) + (z * z) + .00001; 
+                return (( SGN ( INT (13.0/c)) ) / 3.0) + (( SGN (INT (35.0 / c))) / 15.0);
         </div>
-    </form>
-
-    <div id="msg"></div>
+    </div>
 
     <script>
          window.onload = function () {
@@ -195,18 +207,7 @@
             return r;
         }
     </script>
-    <pre>
-        F1: 
-            return ( SIN(x) + COS(z) ) / 60;
-        F2: 
-            retun SIN(x + z) / 25;
-        F3: 
-            c = 50 - (x * x) - (z * z); 
-            return SQRT(c * (SGN(c) + 1)) / 30;
-        F4: 
-            c = (x * x) + (z * z) + .00001; 
-            return (( SGN ( INT (13.0/c)) ) / 3.0) + (( SGN (INT (35.0 / c))) / 15.0);
-    </pre>
+
 </body>
 
 </html>

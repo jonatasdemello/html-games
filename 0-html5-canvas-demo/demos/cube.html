@@ -4,44 +4,51 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+    <link rel="stylesheet" href="../vendor/Bootstrap-styles.css" />
 
     <link rel="stylesheet" href="../css/style.css">
     <title>Canvas</title>
 </head>
 
 <body>
-    <main class="container-fluid">
-        <nav>
-            <ul>
-                <li><a href="../index.html" class="contrast">&larr; Back</a></li>
-            </ul>
+    <main class="container">
+        <nav class="nav">
+            <a class="nav-link active" aria-current="page" href="../index.html">&larr; Back</a>
         </nav>
 
         <h1>Simple Canvas example</h1>
         <canvas id="myCanvas" width="640" height="480"></canvas>
     </main>
 
-    <br>
-    <form id="controls">
-        <div role="group">
-            <input type="button" value="E+" onclick="scaleUp();" /> &nbsp;
-            <input type="button" value="E-" onclick="scaleDown();" /> &nbsp;
-            <input type="button" value="Up" onclick="moveUp();" /> &nbsp;
-            <input type="button" value="Down" onclick="moveDown();" /> &nbsp;
-            <input type="button" value="Left" onclick="moveLeft();" /> &nbsp;
-            <input type="button" value="Right" onclick="moveRight();" /> &nbsp;
-            <input type="button" value="Clear" onclick="ClearCanvas();" /> &nbsp;
-        </div>
-        <div role="group">
-            x:<input type="text" name="rx" id="rx" value="5" size="3" />
-            y:<input type="text" name="ry" id="ry" value="5" size="3" />
-            z:<input type="text" name="rz" id="rz" value="5" size="3" />
-            <input type="button" value="Rotate" onclick="rotate();" />
-        </div>
-    </form>
+    <div class="container">
+        <p><strong>3D Cube - from my Computer Science classes in University.</strong></p>
+        <form id="form2">
+            <div class="input-group">
+                <input class="form-control btn btn-primary" type="button" value="E+" onclick="scaleUp();" />
+                <input class="form-control btn btn-primary" type="button" value="E-" onclick="scaleDown();" />
+            </div>
+            <div class="input-group">
+                <input class="form-control btn btn-primary" type="button" value="Up" onclick="moveUp();" />
+                <input class="form-control btn btn-primary" type="button" value="Down" onclick="moveDown();" />
+            </div>
+            <div class="input-group">
+                <input class="form-control btn btn-primary" type="button" value="Left" onclick="moveLeft();" />
+                <input class="form-control btn btn-primary" type="button" value="Right" onclick="moveRight();" />
+            </div>
+            
+            <div class="input-group">
+                <label class="form-label">x:</label><input class="form-control btn btn-primary" type="text" name="rx" id="rx" value="5" />
+                <label class="form-label">y:</label><input class="form-control btn btn-primary" type="text" name="ry" id="ry" value="5" />
+                <label class="form-label">z:</label><input class="form-control btn btn-primary" type="text" name="rz" id="rz" value="5" />
+            </div>
+            <div class="input-group">
+                <input class="form-control btn btn-primary" type="button" value="Rotate" onclick="rotate();" />
+                <input class="form-control btn btn-primary" type="button" value="Clear" onclick="ClearCanvas();" />
+            </div>
+        </form>
+    </div>
 
-<script>
+    <script>
         "use strict";
         // var numbr = Array.matrix(5,5,0);
         // var names = Array.matrix(3,3,"");

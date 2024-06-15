@@ -4,8 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
-
+    <link rel="stylesheet" href="../vendor/Bootstrap-styles.css" />
+     
     <title>HTML5 Canvas</title>
 </head>
 
@@ -13,22 +13,89 @@
     <main class="container">
         <h1>HTML5 Canvas Demos</h1>
 
-        <div>Here are some canvas experimentations:</div>
-        <div>
-            <ul>
-                <li><a href="./demos/bouncingball.html">bouncingball</a></li>
-                <li><a href="./demos/canvas01.html">canvas01</a></li>
-                <li><a href="./demos/canvas02.html">canvas02</a></li>
-                <li><a href="./demos/cardioid.html">cardioid</a></li>
-                <li><a href="./demos/cube.html">cube</a></li>
-                <li><a href="./demos/curves01.html">curves01</a></li>
-                <li><a href="./demos/functions.html">functions</a></li>
-                <li><a href="./demos/galileo.html">galileo</a></li>
-                <li><a href="./demos/graph3d.html">graph3d</a></li>
-                <li><a href="./demos/graphSin.html">graph3Sin</a></li>
-                <li><a href="./demos/star.html">star</a></li>
-                <li><a href="./demos/terrain.html">terrain</a></li>
-            </ul>
+        <div class="">
+            <p>
+                Some experiences with HTML5 canvas, graphics and libraries.
+            </p>
+            <p>
+                Most of the examples come from old 80's and 90's books, mostly in BASIC (8-bit)
+                and I will be porting or retrofitting them to work with modern tools 
+                such as HTML5 canvas, python and so on.
+            </p>
+            <p>
+                Remembering the old type-in books and magazines, 
+                it always amazed me how some lines of BASIC code could generate 
+                awesome graphics on the screen.
+            </p>
+            <p>
+                A couple of decades later I am looking back at them and trying to understand 
+                how they work and what mathematical formulas are behind it.
+            </p>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <ul class="list-group">
+                        <li class="list-group-item active bg-secondary">Simple</li>
+                        <li class="list-group-item"><a href="./demos/canvas01.html">canvas01</a></li>
+                        <li class="list-group-item"><a href="./demos/canvas02.html">canvas02</a></li>
+                        <li class="list-group-item"><a href="./demos/curves01.html">curves01</a></li>
+                        <li class="list-group-item"><a href="./demos/graphSin.html">graph3Sin</a></li>
+                        <li class="list-group-item"><a href="./demos/bouncingball.html">bouncingball</a></li>
+                        <li class="list-group-item"><a href="./demos/game1.html">game1</a></li>
+                    </ul>
+                </div>
+                <div class="col">
+                    <ul class="list-group">
+                        <li class="list-group-item active bg-secondary">Functions</li>
+                        <li class="list-group-item"><a href="./demos/graph3d.html">graph3d</a></li>
+                        <li class="list-group-item"><a href="./demos/graph3d1.html">graph3d1</a></li>
+                        <li class="list-group-item"><a href="./demos/star.html">star</a></li>
+                        <li class="list-group-item"><a href="./demos/cube.html">cube</a></li>
+                        <li class="list-group-item"><a href="./demos/cardioid.html">cardioid</a></li>
+                        <li class="list-group-item"><a href="./demos/functions.html">functions</a></li>
+                    </ul>
+                </div>
+                <div class="col">
+                    <ul class="list-group">
+                        <li class="list-group-item active bg-secondary">Complex</li>
+                        <li class="list-group-item"><a href="./demos/galileo.html">galileo</a></li>
+                        <li class="list-group-item"><a href="./demos/Canvas_Surface_Rotation.html">3Dcanvas</a></li>
+                        <li class="list-group-item"><a href="./demos/terrain/terrain.html">terrain</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        
+        <div class="container border border-2">
+            <div class="row">
+              <div class="col">
+                <p>How amazing it is that a few lines of code:</p>
+                <pre class="text-warning bg-dark">
+0 SCREEN 7 : GOTO 10
+1 R=SQR(X*X+Y*Y)*1.5 : IF R=0 THEN F=90: GOTO 3
+2 F=ABS(90*SIN(R)/R)
+3 A=INT(10*X+160-5*Y)
+4 B=INT(5*Y+2.5*X+93)
+5 RETURN
+10 FOR Y=-10 TO 10 STEP 0.2
+30  FOR X=-10 TO 10 STEP 0.3
+40   GOSUB 1
+46	 PSET(A,B-F), 15
+50  NEXT X
+60 NEXT Y
+                </pre>
+              </div>
+              <div class="col">
+                <p>Can produce something like this:</p>
+                <div><img src="./img/sin-plot-1.png" width="493" height="260"></div>
+              </div>
+            </div>
         </div>
     </main>
 </body>
