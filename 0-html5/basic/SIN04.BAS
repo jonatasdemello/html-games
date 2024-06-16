@@ -1,0 +1,13 @@
+5 SCREEN 7
+10 FOR Y = -10 TO 10 STEP 0.2
+30  FOR X = -10 TO 10 STEP 0.3
+
+31 R = SQR(X * X + Y * Y) * 1.5 
+32 F = 90 : IF R > 0 THEN F = ABS(90 * SIN(R) / R)
+33 A = INT(10 * X + 160-5 * Y)
+34 B = INT(5 * Y + 2.5 * X + 93)
+
+45   REM IF A < 279 THEN HCOLOR = 1: HPLOT A,B-F: REM HCOLOR = 6: HPLOT A,B + 20
+46	 PSET(A,B-F), 15
+50  NEXT X
+60 NEXT Y
